@@ -131,14 +131,14 @@ class Roster extends Component {
 
         if (!events || events.length === 0) return [];
 
-        events.map(ev => {
+        events.forEach(ev => {
             roster.fromDate = roster.fromDate ? getSmallerDate(ev.start, roster.fromDate) : getDate(ev.start);
             roster.toDate = roster.toDate ? getSmallerDate(ev.end, roster.toDate) : getDate(ev.end);
 
             if(!shiftList[getDate(ev.start)]) {
                 shiftList[getDate(ev.start)] = [];
             }
-            //console.log(ev, shiftList[getDate(ev.start)]);
+            
             shiftList[getDate(ev.start)].push({
                 "startTime": getHoursAndMinuteOfDate(ev.start),
                 "endTime": getHoursAndMinuteOfDate(ev.end),
@@ -152,9 +152,7 @@ class Roster extends Component {
 
     saveRoster = () => {
         let { events, roster, shiftList } = this.state;
-        //console.log(events);
-        //console.log(shiftList);
-        //console.log(this.updateShiftList());
+
         if (events.length === 0 || shiftList.length === 0) {
             notification.error({
                 message: 'Roster',
@@ -165,7 +163,7 @@ class Roster extends Component {
         }
         roster.shiftList = [];
 
-        Object.keys(shiftList).map((key) => {
+        Object.keys(shiftList).forEach((key) => {
             roster.shiftList.push({
                 date: key,
                 employeeShifts: shiftList[key]
