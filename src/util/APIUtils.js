@@ -46,3 +46,51 @@ export function createRoster(rosterDetails) {
         body: JSON.stringify(rosterDetails)
     });
 }
+
+export function getCurrentUser() {
+    if(!localStorage.getItem(ACCESS_TOKEN)) {
+        return Promise.reject("No access token set.");
+    }
+
+    return request({
+        url: API_BASE_URL + "/employee/me",
+        method: 'GET'
+    });
+}
+
+export function login(loginRequest) {
+    return request({
+        url: API_BASE_URL + "/auth/login",
+        method: 'POST',
+        body: JSON.stringify(loginRequest)
+    });
+}
+
+export function signUp(signupRequest) {
+    return request({
+        url: API_BASE_URL + "/auth/signup",
+        method: 'POST',
+        body: JSON.stringify(signupRequest)
+    });
+}
+
+export function checkUsernameAvailability(username) {
+    return request({
+        url: API_BASE_URL + "/user/checkUsernameAvailability?username=" + username,
+        method: 'GET'
+    });
+}
+
+export function checkEmailAvailability(email) {
+    return request({
+        url: API_BASE_URL + "/user/checkEmailAvailability?email=" + email,
+        method: 'GET'
+    });
+}
+
+export function getUserProfile(username) {
+    return request({
+        url: API_BASE_URL + "/users/" + username,
+        method: 'GET'
+    });
+}

@@ -43,11 +43,11 @@ class Roster extends Component {
                 isLoading: false
             })
         }).catch((error) => {
-            notification.error({
+            /*notification.error({
                 message: 'Roster',
                 description: error,
                 duration: 2
-            });
+            });*/
         });
     }
 
@@ -146,7 +146,6 @@ class Roster extends Component {
                 "employeeId": ev.id
             });
         });
-        console.log(shiftList);
         return shiftList;
     }
 
@@ -225,9 +224,9 @@ class Roster extends Component {
 
     render() {
         return (
-            <div className="">
+            <div className="roster-container container">
                 <h1 className="title">
-                    Roster
+                    Roster Management
                 </h1>
                 <div className="desc">
                     <BigCalendar

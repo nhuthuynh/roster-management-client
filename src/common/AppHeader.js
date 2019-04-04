@@ -9,18 +9,43 @@ const Header = Layout.Header;
 
 class AppHeader extends Component {
     render() {
-        let menuItems = [
-            <Menu.Item key="/">
+        let menuItems = []
+        if (this.props.currentUser) {
+            const { onLogout } = this.props; 
+            menuItems = [
+                <Menu.Item key="/">
+                    <Link to="/">
+                        <Icon type="home" className="nav-icon" />
+                    </Link>
+                </Menu.Item>,
+                <Menu.Item key="/roster">
+                    <Link to="/roster/">
+                        <span>Roster</span>
+                    </Link>
+                </Menu.Item>,
+                <Menu.Item key="/logout">
+                    <Link to="" onClick={onLogout}>
+                        <span>Logout</span>
+                    </Link>
+                </Menu.Item>
+            ]
+        }
+        else
+            menuItems = [<Menu.Item key="/">
                 <Link to="/">
                     <Icon type="home" className="nav-icon" />
                 </Link>
             </Menu.Item>,
-            <Menu.Item key="/roster">
-                <Link to="/roster/">
-                    <span>Roster</span>
+            <Menu.Item key="/login">
+                <Link to="/login/">
+                    <span>Login</span>
                 </Link>
             </Menu.Item>,
-        ];
+            <Menu.Item key="/register">
+                <Link to="/register/">
+                    <span>Signup</span>
+                </Link>
+            </Menu.Item>]
 
         return (
             <Header className="app-header">
