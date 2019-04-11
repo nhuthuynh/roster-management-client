@@ -6,9 +6,10 @@ import {
     Switch
 } from 'react-router-dom';
 import AppHeader from '../common/AppHeader'
-import Roster from '../roster/roster'
+import RosterPage from '../roster/RosterPage'
 import Home from '../home/home'
 import Register from '../employee/register'
+import EmployeesPage from '../employee/EmployeesPage'
 import Login from '../employee/login'
 import NotFound from '../common/NotFound'
 import { Layout, notification } from 'antd'
@@ -89,16 +90,15 @@ class App extends Component {
 
         return (
             <Layout className="app-container">
-                <AppHeader isAuthenticated={this.state.isAuthenticated} 
-                currentUser={this.state.currentUser} 
-                onLogout={this.handleLogout} />
+                <AppHeader isAuthenticated={this.state.isAuthenticated} currentUser={this.state.currentUser} onLogout={this.handleLogout} />
                 <Content className="app-content">
                     <div className="container">
                         <Switch>
                             <Route exact path="/" render={(props) => <Home {...props} />} />
                             <Route path="/register" component={Register} />
                             <Route path="/login" render={(props) => <Login onLogin={this.handleLogin} {...props} />} />
-                            <PrivateRoute authenticated={this.state.isAuthenticated} path="/roster" component={Roster} handleLogout={this.handleLogout}/>
+                            <PrivateRoute currentUser={this.state.currentUser} authenticated={this.state.isAuthenticated} path="/employees" component={EmployeesPage} handleLogout={this.handleLogout}/>
+                            <PrivateRoute currentUser={this.state.currentUser} authenticated={this.state.isAuthenticated} path="/roster" component={RosterPage} handleLogout={this.handleLogout}/>
                             <Route component={ NotFound } />
                         </Switch>
                     </div>

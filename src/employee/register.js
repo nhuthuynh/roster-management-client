@@ -2,29 +2,7 @@ import React, { Component } from 'react'
 import { Form, Input, Button, notification } from 'antd'
 import { signUp } from '../util/APIUtils'
 import './register.css'
-
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
-const tailFormItemLayout = {
-  wrapperCol: {
-    xs: {
-      span: 24,
-      offset: 0,
-    },
-  sm: {
-    span: 16,
-    offset: 8,
-  },
-},
-};
+import { FORM_ITEMS_LAYOUT, TAIL_FORM_ITEMS_LAYOUT } from '../constants'
 
 class RegisterForm extends Component {
   
@@ -90,14 +68,14 @@ class RegisterForm extends Component {
         return (
             <div className="register-container">
                 <h1 className="title">Register</h1>
-                <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+                <Form {...FORM_ITEMS_LAYOUT} onSubmit={this.handleSubmit}>
                       <Form.Item label="First name"> 
                         {
                           getFieldDecorator('firstName', {
                             rules: [{required: true, message: 'Please input your first name!'}],
                           })(<Input />)
                         }
-                        </Form.Item>
+                      </Form.Item>
                       <Form.Item label="Last name">
                         {
                           getFieldDecorator('lastName', {
@@ -144,16 +122,14 @@ class RegisterForm extends Component {
                             <Input addonBefore={prefixSelector} style={{ width: '100%' }} />
                           )}
                         </Form.Item>
-                <Form.Item {...tailFormItemLayout}>
-                <Button type="primary btn-prev" onClick={this.reset}>Reset</Button>
-                <Button type="primary" htmlType="submit">Register</Button>
-        </Form.Item>
-      </Form>
+                      <Form.Item {...TAIL_FORM_ITEMS_LAYOUT}>
+                        <Button type="primary btn-prev" onClick={this.reset}>Reset</Button>
+                        <Button type="primary" htmlType="submit">Register</Button>
+                      </Form.Item>
+              </Form>
             </div>
         )
     }
 }
 
-const WrappedRegistrationForm = Form.create({ name: 'register' })(RegisterForm);
-
-export default WrappedRegistrationForm
+export default Form.create({ name: 'register' })(RegisterForm)

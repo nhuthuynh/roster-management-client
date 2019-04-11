@@ -24,17 +24,17 @@ const request = (options) => {
         );
 };
 
-export function loadEmployee() {
+export function loadEmployees(shopOwnerId) {
     return request({
-        url: `${API_BASE_URL}/employee/load`,
+        url: `${API_BASE_URL}/employee/load?shopOwnerId=${shopOwnerId}`,
         method: 'GET'
     });
 }
 
 
-export function loadRoster(fromDate, toDate) {
+export function loadRoster(fromDate, toDate, shopOwnerId) {
     return request({
-        url: `${API_BASE_URL}/roster/load?from=${fromDate}&to=${toDate}`,
+        url: `${API_BASE_URL}/roster/load?from=${fromDate}&to=${toDate}&shopOwnerId=${shopOwnerId}`,
         method: 'GET'
     });
 }
