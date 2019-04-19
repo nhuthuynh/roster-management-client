@@ -10,7 +10,7 @@ class AddEmployeeModal extends Component {
         const { getFieldDecorator } = form
 
         return (<Modal onOk={handleSubmit} onCancel={resetForm} title={title} visible={visible}>
-            <Form {...FORM_ITEMS_LAYOUT} onSubmit={handleSubmit}>
+            <Form {...FORM_ITEMS_LAYOUT}>
                         <Form.Item label="First name"> 
                             {
                             getFieldDecorator('firstName', {

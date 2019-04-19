@@ -38,7 +38,7 @@ class Roster extends Component {
         const { currentUser } = this.props
         const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
 
-        Promise.all([loadEmployees(shopOwnerId), loadRoster(getDate(dates.firstDate), getDate(dates.lastDate))]).then((values)=> {
+        Promise.all([loadEmployees(shopOwnerId), loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId)]).then((values)=> {
             this.setState({
                 employees: values[0],
                 roster: values[1] ? values[1] : {},
@@ -209,8 +209,9 @@ class Roster extends Component {
         this.setState({
             isLoading: true
         })
-
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate)).then((roster) => {
+        const { currentUser } = this.props
+        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
+        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((roster) => {
             this.setState({
                 roster: roster ? roster : {},
                 events: roster.shiftList ? this.convertStringToDateInShiftList(roster.shiftList) : [],

@@ -58,11 +58,11 @@ export function getCurrentUser() {
     });
 }
 
-export function login(loginRequest) {
+export function signIn(signInRequest) {
     return request({
-        url: API_BASE_URL + "/auth/login",
+        url: API_BASE_URL + "/auth/signin",
         method: 'POST',
-        body: JSON.stringify(loginRequest)
+        body: JSON.stringify(signInRequest)
     });
 }
 
@@ -72,6 +72,14 @@ export function signUp(signupRequest) {
         method: 'POST',
         body: JSON.stringify(signupRequest)
     });
+}
+
+export function resignEmployees(resignRequest) {
+    return request({
+        url: API_BASE_URL + "/employee/resign",
+        method: 'POST',
+        body: JSON.stringify(resignRequest)
+    })
 }
 
 export function checkUsernameAvailability(username) {
