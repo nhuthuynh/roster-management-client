@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { loadRoster, createRoster, loadEmployee } from '../util/APIUtils';
+import { loadRoster, createRoster, loadEmployees } from '../util/APIUtils';
 import { getHoursAndMinuteOfDate, getSmallerDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
 import './roster.css';
 import './react-big-calendar.css';
@@ -35,7 +35,10 @@ class Roster extends Component {
             isLoading: true
         });
         let dates = getFirstAndLastDayOfWeek(new Date(), false);
-        Promise.all([loadEmployee(), loadRoster(getDate(dates.firstDate), getDate(dates.lastDate))]).then((values)=> {
+        const { currentUser } = this.props
+        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
+
+        Promise.all([loadEmployees(shopOwnerId), loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId)]).then((values)=> {
             this.setState({
                 employees: values[0],
                 roster: values[1] ? values[1] : {},
@@ -43,11 +46,11 @@ class Roster extends Component {
                 isLoading: false
             })
         }).catch((error) => {
-            notification.error({
+            /*notification.error({
                 message: 'Roster',
                 description: error,
                 duration: 2
-            });
+            });*/
         });
     }
 
@@ -93,7 +96,7 @@ class Roster extends Component {
             isEmployeeSelectable: false
         })
     }
-    employeeSelect = (employee) => {
+    selectEmployee = (employee) => {
         let { events, roster, shiftList } = this.state;
         if (events.length > 0) {
             let selectedEvents = events[events.length - 1];
@@ -146,7 +149,6 @@ class Roster extends Component {
                 "employeeId": ev.id
             });
         });
-        console.log(shiftList);
         return shiftList;
     }
 
@@ -207,8 +209,9 @@ class Roster extends Component {
         this.setState({
             isLoading: true
         })
-
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate)).then((roster) => {
+        const { currentUser } = this.props
+        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
+        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((roster) => {
             this.setState({
                 roster: roster ? roster : {},
                 events: roster.shiftList ? this.convertStringToDateInShiftList(roster.shiftList) : [],
@@ -225,9 +228,9 @@ class Roster extends Component {
 
     render() {
         return (
-            <div className="">
+            <div className="roster-container container">
                 <h1 className="title">
-                    Roster
+                    Roster Management
                 </h1>
                 <div className="desc">
                     <BigCalendar
@@ -244,7 +247,7 @@ class Roster extends Component {
                 </div>
                 <Affix style={{ position: 'absolute', top: 64, right: 10}} className={"employee-list-affix"}>
                     <h2>Employees</h2>
-                    <List dataSource={this.state.employees} renderItem={item => (<List.Item><Button disabled={!this.state.isEmployeeSelectable} onClick={()=>{this.employeeSelect(item)}}>{ item.firstName }</Button></List.Item>)}/>
+                    <List dataSource={this.state.employees} renderItem={item => (<List.Item><Button disabled={!this.state.isEmployeeSelectable} onClick={()=>{this.selectEmployee(item)}}>{ item.firstName }</Button></List.Item>)}/>
                 </Affix>
                 <Button className="go-back-btn" type="primary" size="large" onClick={this.saveRoster}>Save roster</Button>
             </div>

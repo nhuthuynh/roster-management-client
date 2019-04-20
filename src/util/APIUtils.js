@@ -24,17 +24,17 @@ const request = (options) => {
         );
 };
 
-export function loadEmployee() {
+export function loadEmployees(shopOwnerId) {
     return request({
-        url: `${API_BASE_URL}/employee/load`,
+        url: `${API_BASE_URL}/employee/load?shopOwnerId=${shopOwnerId}`,
         method: 'GET'
     });
 }
 
 
-export function loadRoster(fromDate, toDate) {
+export function loadRoster(fromDate, toDate, shopOwnerId) {
     return request({
-        url: `${API_BASE_URL}/roster/load?from=${fromDate}&to=${toDate}`,
+        url: `${API_BASE_URL}/roster/load?from=${fromDate}&to=${toDate}&shopOwnerId=${shopOwnerId}`,
         method: 'GET'
     });
 }
@@ -44,5 +44,61 @@ export function createRoster(rosterDetails) {
         url: API_BASE_URL + "/roster/create",
         method: 'POST',
         body: JSON.stringify(rosterDetails)
+    });
+}
+
+export function getCurrentUser() {
+    if(!localStorage.getItem(ACCESS_TOKEN)) {
+        return Promise.reject("No access token set.");
+    }
+
+    return request({
+        url: API_BASE_URL + "/employee/me",
+        method: 'GET'
+    });
+}
+
+export function signIn(signInRequest) {
+    return request({
+        url: API_BASE_URL + "/auth/signin",
+        method: 'POST',
+        body: JSON.stringify(signInRequest)
+    });
+}
+
+export function signUp(signupRequest) {
+    return request({
+        url: API_BASE_URL + "/auth/signup",
+        method: 'POST',
+        body: JSON.stringify(signupRequest)
+    });
+}
+
+export function resignEmployees(resignRequest) {
+    return request({
+        url: API_BASE_URL + "/employee/resign",
+        method: 'POST',
+        body: JSON.stringify(resignRequest)
+    })
+}
+
+export function checkUsernameAvailability(username) {
+    return request({
+        url: API_BASE_URL + "/user/checkUsernameAvailability?username=" + username,
+        method: 'GET'
+    });
+}
+
+export function checkEmailAvailability(email) {
+    return request({
+        url: API_BASE_URL + "/user/checkEmailAvailability?email=" + email,
+        method: 'GET'
+    });
+}
+
+export function getUserProfile(username) {
+    return request({
+        url: API_BASE_URL + "/users/" + username,
+        method: 'GET'
     });
 }

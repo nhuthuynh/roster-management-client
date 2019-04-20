@@ -20,9 +20,19 @@ export function getSmallerDate(firstDate, secondDate) {
 export function switchPositionBetweenDayAndMonth(date) {
     let tempDate = date.split("-")
 
-    return `${tempDate[1]}-${tempDate[0]}-${tempDate[2]}`;
+    return `${tempDate[1]}-${tempDate[0]}-${tempDate[2]}`
 
 }
+
+/**
+* Generate random string for password
+* 
+*/
+
+export function generateRandomPassword() {
+    return Math.random().toString(36).slice(-10)
+}
+
 /**
 * Given a Date, return a new Date object for the first
 * day of the week.
