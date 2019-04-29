@@ -43,5 +43,9 @@ export const TITLE_SIGN_UP = "sign up"
 
 export const ROUTES = {
   employees: "/employees",
-  roster: "/roster"
+  roster: "/roster",
+  availability: "/availability"
 }
+
+export const AVAILABILITY_DAY_HOUR_LIST = [0, 15, 30, 45]
+export const AVAILABILITY_DAY_MINUTE_LIST = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]

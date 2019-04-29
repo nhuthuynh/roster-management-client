@@ -37,6 +37,9 @@ class AppHeader extends Component {
             menuItems = [
                 <Menu.Item key="/"><Link to="/"><span>Home</span></Link></Menu.Item>,
             ]
+        
+        menuItems.push(<Menu.Item key={ROUTES.availability}><Link to={ROUTES.availability}><span>Availability</span></Link></Menu.Item>)
+        
         const { toggleProfileMenu } = this
         const { currentUser, onSignOut, isAuthenticated, showSignUpModal, showSignInModal } = this.props
         const { isShowProfileMenu } = this.state

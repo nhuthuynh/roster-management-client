@@ -54,3 +54,7 @@ export function getFirstAndLastDayOfWeek(date, mon) {
         firstDate, lastDate
     };
 }
+
+export function formatNumberLessThanTen(number) {
+    return number < 10 ? "0" + number : number;
+}
