@@ -15,14 +15,6 @@ class AppHeader extends Component {
         isShowProfileMenu: false
     }
 
-    toggleProfileMenu = () => {
-        this.setState((prevState, props) => {
-            return {
-                isShowProfileMenu: !prevState.isShowProfileMenu
-            }
-        })
-    }
-
     render() {
         let menuItems = []
         if (this.props.currentUser) {
@@ -31,6 +23,7 @@ class AppHeader extends Component {
                 <Menu.Item key="/"><Link to="/"><span>Home</span></Link></Menu.Item>,
                 <Menu.Item key={ROUTES.employees}><Link to={ROUTES.employees}><span>Employees</span></Link></Menu.Item>,
                 <Menu.Item key={ROUTES.roster}><Link to={ROUTES.roster}><span>Roster</span></Link></Menu.Item>,
+                <Menu.Item key={ROUTES.availability}><Link to={ROUTES.availability}><span>Availability</span></Link></Menu.Item>
             ]
         }
         else
@@ -38,11 +31,7 @@ class AppHeader extends Component {
                 <Menu.Item key="/"><Link to="/"><span>Home</span></Link></Menu.Item>,
             ]
         
-        menuItems.push(<Menu.Item key={ROUTES.availability}><Link to={ROUTES.availability}><span>Availability</span></Link></Menu.Item>)
-        
-        const { toggleProfileMenu } = this
         const { currentUser, onSignOut, isAuthenticated, showSignUpModal, showSignInModal } = this.props
-        const { isShowProfileMenu } = this.state
         const name = currentUser && currentUser.firstName ?  `Welcome ${currentUser.firstName} ${currentUser.lastName}` : ""
         
         return (
@@ -51,7 +40,7 @@ class AppHeader extends Component {
                     <div className="app-title" >
                         <Link to="/">Cafe Employees Management System - CEMS</Link>
                     </div>
-                    <ProfileArea isShowProfileMenu={isShowProfileMenu} showSignUpModal={showSignUpModal} showSignInModal={showSignInModal} isAuthenticated={isAuthenticated} onSignOut={onSignOut} toggleProfileMenu={toggleProfileMenu} name={name} />
+                    <ProfileArea showSignUpModal={showSignUpModal} showSignInModal={showSignInModal} isAuthenticated={isAuthenticated} onSignOut={onSignOut} name={name} />
                     <Menu
                         className="app-menu"
                         mode="horizontal"
