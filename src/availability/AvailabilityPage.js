@@ -5,7 +5,7 @@ import { notification, Button } from 'antd'
 import AvailabilityDay from './AvailabilityDay'
 import './availability.css'
 import { REG_TIME_FORMAT } from '../constants'
-import { formatNumberWithLeadingZero, isValidTime } from '../util/helper'
+import { formatNumberWithLeadingZero, isValidTime, copyArray } from '../util/helper'
 
 export default class AvailabilityPage extends Component {
     state = {
@@ -23,7 +23,7 @@ export default class AvailabilityPage extends Component {
                 return {
                     ...prevState,
                     availabilityList: response,
-                    originalAvailabilityList: response.slice(0), // slice or concat method copy value of an array
+                    originalAvailabilityList: copyArray(response),
                     isLoading: false
                 }
             })    
@@ -44,7 +44,7 @@ export default class AvailabilityPage extends Component {
                 this.setState((prevState) => {
                     return {
                         ...prevState,
-                        originalAvailabilityList: availabilityList,
+                        originalAvailabilityList: copyArray(availabilityList),
                         mode: "view"
                     }
                 })
@@ -98,7 +98,7 @@ export default class AvailabilityPage extends Component {
             return {
                 ...prevState,
                 mode: "view",
-                availabilityList: originalAvailabilityList
+                availabilityList: copyArray(originalAvailabilityList)
             }
         })
     }
