@@ -55,6 +55,13 @@ export function getFirstAndLastDayOfWeek(date, mon) {
     };
 }
 
-export function formatNumberLessThanTen(number) {
-    return number < 10 ? "0" + number : number;
+export function formatNumberWithLeadingZero(hour, minute) {
+    hour = hour < 10 ? `0${hour}` : hour
+    minute = minute < 10 ? `0${minute}` : minute
+    return `${hour}:${minute}`
+}
+
+export function isValidTime(time, reg) {
+    if (!time || !reg || Number.isNaN(time) || !reg.test(time)) return false
+    return true
 }
