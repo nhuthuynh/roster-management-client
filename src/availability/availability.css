@@ -1,0 +1,36 @@
+.time-control-container {
+    padding: 5px;
+}
+
+.time-control-container .time-control-item {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.time-control-container .time-control-day {
+    width: 10%;
+}
+
+.time-control-container .time-control-input {
+    display: inline-block;
+    width: 10%;
+}
+
+/* to prevent the arrow overflow the popup container,
+or the height is not enough when content is empty */
+.numeric-input .ant-tooltip-inner {
+    min-width: 32px;
+    min-height: 37px;
+  }
+  
+  .numeric-input .numeric-input-title {
+    font-size: 14px;
+  }
+
+  .availability-container .btn-first {
+      margin-right: 5px;
+  }
+
+  .availability-container label.ant-input:hover {
+      border-color: #d9d9d9;
+  }

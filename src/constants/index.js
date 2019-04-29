@@ -43,5 +43,9 @@ export const TITLE_SIGN_UP = "sign up"
 
 export const ROUTES = {
   employees: "/employees",
-  roster: "/roster"
+  roster: "/roster",
+  availability: "/availability",
+  leave: "/leave"
 }
+
+export const REG_TIME_FORMAT = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/

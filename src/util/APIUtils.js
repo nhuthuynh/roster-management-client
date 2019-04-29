@@ -82,6 +82,21 @@ export function resignEmployees(resignRequest) {
     })
 }
 
+export function loadAvailabilities(employeeId) {
+    return request({
+        url: `${API_BASE_URL}/availability/load?employeeId=${employeeId}`,
+        method: 'GET'
+    })
+}
+
+export function saveAvailabilities(availabilityRequest) {
+    return request({
+        url: `${API_BASE_URL}/availability/save`,
+        method: 'POST',
+        body: JSON.stringify(availabilityRequest)
+    })
+}
+
 export function checkUsernameAvailability(username) {
     return request({
         url: API_BASE_URL + "/user/checkUsernameAvailability?username=" + username,

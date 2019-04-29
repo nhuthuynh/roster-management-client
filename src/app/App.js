@@ -8,6 +8,7 @@ import AppHeader from '../common/AppHeader'
 import RosterPage from '../roster/RosterPage'
 import Home from '../home/home'
 import EmployeesPage from '../employee/EmployeesPage'
+import AvailabilityPage from '../availability/AvailabilityPage'
 import WrappedSignUpModal from '../employee/SignUpModal'
 import WrappedSignInModal from '../employee/SignInModal'
 import NotFound from '../common/NotFound'
@@ -204,6 +205,7 @@ class App extends Component {
                             <Route exact path="/" render={(props) => <Home {...props} />} />
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.employees} component={EmployeesPage}/>
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.roster} component={RosterPage}/>
+                            <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.availability} component={AvailabilityPage}/>
                             <Route component={ NotFound } />
                         </Switch>
                         <WrappedSignUpModal title={TITLE_SIGN_UP} wrappedComponentRef={saveSignUpFormRef} visible={isShowSignUpModal} onCancel={cancelSignUp} handleSubmit={handleSignUp} onReset={resetSignUp} />

@@ -54,3 +54,43 @@ export function getFirstAndLastDayOfWeek(date, mon) {
         firstDate, lastDate
     };
 }
+
+/**
+* Given Hour and Minute return string formatted in HH:mm 
+* @param {int} hour
+* @param {int} minute
+*/
+
+export function formatNumberWithLeadingZero(hour, minute) {
+    hour = hour < 10 ? `0${hour}` : hour
+    minute = minute < 10 ? `0${minute}` : minute
+    return `${hour}:${minute}`
+}
+
+/**
+* Given time and regex return boolean value of whether the given time is valid with given regex
+* @param {string} time
+* @param {regex} reg - a regex to check the given time is valid or not
+*/
+
+export function isValidTime(time, reg) {
+    if (!time || !reg || Number.isNaN(time) || !reg.test(time)) return false
+    return true
+}
+
+/**
+ * Given an a array of objects, return new value-copied array of objects
+ * @param {Array} array - array of objects
+ */
+
+export function copyArray(array) {
+    let newArray = []
+    for (let arrayIndex = 0, arrayLen = array.length; arrayIndex < arrayLen; arrayIndex++) {
+        newArray[arrayIndex] = {}
+        for(let prop in array[arrayIndex]) {
+            newArray[arrayIndex][prop] = array[arrayIndex][prop]
+        }
+    }
+
+    return newArray
+}
