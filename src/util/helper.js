@@ -79,7 +79,7 @@ export function isValidTime(time, reg) {
 }
 
 /**
- * Given an a array of objects, return new value-copied array of objects
+ * Given an an array of objects, return new value-copied array of objects
  * @param {Array} array - array of objects
  */
 
