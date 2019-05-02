@@ -45,7 +45,9 @@ export const ROUTES = {
   employees: "/employees",
   roster: "/roster",
   availability: "/availability",
-  leave: "/leave"
+  leave: "/leave",
+  profile: "/profile",
+  changePassword: "/changePassword"
 }
 
 export const REG_TIME_FORMAT = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/

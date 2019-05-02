@@ -97,23 +97,40 @@ export function saveAvailabilities(availabilityRequest) {
     })
 }
 
-export function checkUsernameAvailability(username) {
+export function getEmployeeProfile(employeeId) {
     return request({
-        url: API_BASE_URL + "/user/checkUsernameAvailability?username=" + username,
+        url: `${API_BASE_URL}/profile/load?employeeId=${employeeId}`,
         method: 'GET'
     });
 }
 
-export function checkEmailAvailability(email) {
+export function saveEmployeeProfile(profileRequest) {
     return request({
-        url: API_BASE_URL + "/user/checkEmailAvailability?email=" + email,
-        method: 'GET'
-    });
+        url: `${API_BASE_URL}/profile/save`,
+        method: 'POST',
+        body: JSON.stringify(profileRequest)
+    })
 }
 
-export function getUserProfile(username) {
+export function changePassword(changePasswordRequest) {
     return request({
-        url: API_BASE_URL + "/users/" + username,
-        method: 'GET'
-    });
+        url: `${API_BASE_URL}/employee/changePassword`,
+        method: 'POST',
+        body: JSON.stringify(changePasswordRequest)
+    })
+}
+
+export function loadProfile(employeeId) {
+    return request({
+        url: `${API_BASE_URL}/employee/loadProfile?employeeId=${employeeId}`,
+        method: 'GET',
+    })
+}
+
+export function updateProfile(profileRequest) {
+    return request({
+        url: `${API_BASE_URL}/employee/updateProfile`,
+        method: 'POST',
+        body: JSON.stringify(profileRequest)
+    })
 }

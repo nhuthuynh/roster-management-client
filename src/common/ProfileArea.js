@@ -8,7 +8,7 @@ export default function ProfileArea(props) {
     const { name, isAuthenticated, showSignUpModal, showSignInModal, onSignOut } = props
     const menu = (<Menu className="profile-menu" mode="vertical">
         <Menu.Item><Link to="/profile">Profile</Link></Menu.Item>
-        <Menu.Item><Link to="/changepassword">Change password</Link></Menu.Item>
+        <Menu.Item><Link to="/changePassword">Change password</Link></Menu.Item>
         <Menu.Item><a onClick={onSignOut}>Sign out</a></Menu.Item>
     </Menu>)
     return <div className="profile-area">
