@@ -193,7 +193,7 @@ export default class EmployeesPage extends Component {
                         })
                     }
                 />
-                <WrappedAddEmployeeModal wrappedComponentRef={saveFormRef} onCancel={hideAddEmployeeModal} visible={isShowModal} handleSubmit={addEmployee} resetForm={resetForm} />
+                <WrappedAddEmployeeModal wrappedComponentRef={saveFormRef} onCancel={hideAddEmployeeModal} visible={isShowModal} handleSubmit={addEmployee} />
             </div>
         )
     }

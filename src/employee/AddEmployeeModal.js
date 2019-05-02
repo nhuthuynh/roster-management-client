@@ -6,10 +6,10 @@ const { Option } = Select;
 
 class AddEmployeeModal extends Component {
     render () {
-        const { title, visible, handleSubmit, form, resetForm } = this.props
+        const { title, visible, handleSubmit, form, onCancel } = this.props
         const { getFieldDecorator } = form
 
-        return (<Modal onOk={handleSubmit} onCancel={resetForm} title={title} visible={visible}>
+        return (<Modal onOk={handleSubmit} onCancel={onCancel} title={title} visible={visible}>
             <Form {...FORM_ITEMS_LAYOUT}>
                         <Form.Item label="First name"> 
                             {
