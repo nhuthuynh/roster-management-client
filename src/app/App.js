@@ -11,14 +11,16 @@ import EmployeesPage from '../employee/EmployeesPage'
 import ProfilePage from '../profile/ProfilePage'
 import AvailabilityPage from '../availability/AvailabilityPage'
 import ChangePasswordPage from '../profile/ChangePasswordPage'
+import ResetPasswordPage from '../employee/ResetPasswordPage'
 import WrappedSignUpModal from '../employee/SignUpModal'
 import WrappedSignInModal from '../employee/SignInModal'
+import WrappedForgotPasswordModal from '../employee/ForgotPasswordModal'
 import NotFound from '../common/NotFound'
 import { Layout, notification } from 'antd'
 import LoadingIndicator from '../common/LoadingIndicator'
 import PrivateRoute from '../common/PrivateRoute'
 
-import { signUp, signIn, getCurrentUser } from '../util/APIUtils'
+import { signUp, signIn, getCurrentUser, resetPassword } from '../util/APIUtils'
 
 import { ACCESS_TOKEN, EMPLOYEE_ROLES, EMPLOYEE_TYPES, TITLE_SIGN_IN, TITLE_SIGN_UP, ROUTES } from '../constants'
 
@@ -38,7 +40,8 @@ class App extends Component {
             isAuthenticated: false,
             isLoading: false,
             isShowSignUpModal: false,
-            isShowLoginModal: false
+            isShowLoginModal: false,
+            isShowForgotPasswordModal: false
         }
     }
 
@@ -63,11 +66,15 @@ class App extends Component {
     }
 
     saveSignUpFormRef = (signUpFormRef) => {
-        this.signUpFormRef = signUpFormRef;
+        this.signUpFormRef = signUpFormRef
     }
 
     saveSignInFormRef = (signInFormRef) => {
-        this.signInFormRef = signInFormRef;
+        this.signInFormRef = signInFormRef
+    }
+
+    saveForgotPasswordFormRef = (forgotPasswordFormRef) => {
+        this.forgotPasswordFormRef = forgotPasswordFormRef
     }
 
     handleSignUp = (e) => {
@@ -139,8 +146,30 @@ class App extends Component {
       })
     }
 
+    handleResetPassword = (e) => {
+        e.preventDefault()
+        const { form } = this.forgotPasswordFormRef.props
+        form.validateFields((errors, values) => {
+            if(!errors) {
+                resetPassword(values).then((response) => {
+                    if(response && response.success) {
+                        notification.success({
+                            message: 'CEMS',
+                            description: response.message
+                        })
+                    }
+                }).catch((error) => {
+                    notification.error({
+                        message: 'CEMS',
+                        description: 'Reset password error: ' + error.message || ''
+                    })
+                })
+            }
+        })
+    }
+
     cancelSignUp = () => {
-        this.setState((prevState, prevProps) => {
+        this.setState((prevState) => {
             this.signUpFormRef.props.form.resetFields()
             return {
                 ...prevState,
@@ -150,7 +179,7 @@ class App extends Component {
     }
 
     cancelSignIn = () => {
-        this.setState((prevState, prevProps) => {
+        this.setState((prevState) => {
             this.signInFormRef.props.form.resetFields()
             return {
                 ...prevState,
@@ -159,20 +188,45 @@ class App extends Component {
         })
     }
 
-    showSignInModal = () => {
-        this.setState((prevState, prevProps) => {
+    cancelForgotPassword = () => {
+        this.setState((prevState) => {
+            this.forgotPasswordFormRef.props.form.resetFields()
             return {
                 ...prevState,
+                isShowForgotPasswordModal: false
+            }
+        })
+    }
+
+    showSignInModal = () => {
+        this.setState((prevState) => {
+            return {
+                ...prevState,
+                isShowForgotPasswordModal: false,
+                isShowSignUpModal: false,
                 isShowSignInModal: true
             }
         })
     }
 
     showSignUpModal = () => {
-        this.setState((prevState, prevProps) => {
+        this.setState((prevState) => {
             return {
                 ...prevState,
+                isShowSignInModal: false,
+                isShowForgotPasswordModal: false,
                 isShowSignUpModal: true
+            }
+        })
+    }
+
+    showForgotPasswordModal = () => {
+        this.setState((prevState) => {
+            return {
+                ...prevState,
+                isShowSignInModal: false,
+                isShowSignUpModal: false,
+                isShowForgotPasswordModal: true
             }
         })
     }
@@ -185,6 +239,10 @@ class App extends Component {
         this.signUpFormRef.props.form.resetFields()
     }
 
+    resetForgotPassword = () => {
+        this.forgotPasswordFormRef.props.form.resetFields()
+    }
+
     showUnauthorizedMessage = () => {
         notification.error({
             message: 'You do not have permission for this action, Please sign in with authorized account!'
@@ -195,8 +253,14 @@ class App extends Component {
         if(this.state.isLoading) {
             return <LoadingIndicator />
         }
-        const { isAuthenticated, currentUser, isShowSignUpModal, isShowSignInModal } = this.state
-        const { saveSignUpFormRef, saveSignInFormRef, cancelSignUp, cancelSignIn, handleSignUp, handleSignIn, showSignUpModal, showSignInModal, signOut, resetSignUp, resetSignIn, showUnauthorizedMessage } = this
+        const { isAuthenticated, currentUser, isShowSignUpModal, isShowSignInModal, isShowForgotPasswordModal } = this.state
+        const { saveSignUpFormRef, saveSignInFormRef, saveForgotPasswordFormRef,
+            cancelSignUp, cancelSignIn, cancelForgotPassword,
+            handleSignUp, handleSignIn, handleResetPassword,
+            showSignUpModal, showSignInModal, showForgotPasswordModal,
+            signOut, 
+            resetSignUp, resetSignIn, resetForgotPassword,
+            showUnauthorizedMessage } = this
 
         return (
             <Layout className="app-container">
@@ -210,10 +274,12 @@ class App extends Component {
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.availability} component={AvailabilityPage}/>
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.profile} component={ProfilePage}/>
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.changePassword} component={ChangePasswordPage}/>
+                            <Route component={ ResetPasswordPage } path={ ROUTES.resetPassword }/>
                             <Route component={ NotFound } />
                         </Switch>
-                        <WrappedSignUpModal title={TITLE_SIGN_UP} wrappedComponentRef={saveSignUpFormRef} visible={isShowSignUpModal} onCancel={cancelSignUp} handleSubmit={handleSignUp} onReset={resetSignUp} />
-                        <WrappedSignInModal title={TITLE_SIGN_IN} wrappedComponentRef={saveSignInFormRef} visible={isShowSignInModal} onCancel={cancelSignIn} handleSubmit={handleSignIn} onReset={resetSignIn} />
+                        <WrappedSignUpModal title={TITLE_SIGN_UP} wrappedComponentRef={saveSignUpFormRef} visible={isShowSignUpModal} onCancel={cancelSignUp} handleSubmit={handleSignUp} onReset={resetSignUp}/>
+                        <WrappedSignInModal title={TITLE_SIGN_IN} wrappedComponentRef={saveSignInFormRef} visible={isShowSignInModal} onCancel={cancelSignIn} handleSubmit={handleSignIn} onReset={resetSignIn} showForgotPasswordModal={showForgotPasswordModal} />
+                        <WrappedForgotPasswordModal title={TITLE_SIGN_IN} wrappedComponentRef={saveForgotPasswordFormRef} visible={isShowForgotPasswordModal} onCancel={cancelForgotPassword} handleSubmit={handleResetPassword} onReset={resetForgotPassword} />
                     </div>
                 </Content>
             </Layout>
