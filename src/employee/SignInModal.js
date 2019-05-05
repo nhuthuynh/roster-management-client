@@ -3,7 +3,7 @@ import { Modal, Form, Input, Button, Icon } from 'antd'
 
 class SignInModal extends Component {
     render () { 
-        const { title, visible, handleSubmit, form, onCancel, onReset } = this.props
+        const { title, visible, handleSubmit, form, onCancel, onReset, showForgotPasswordModal } = this.props
         const { getFieldDecorator } = form
 
         return (
@@ -29,6 +29,9 @@ class SignInModal extends Component {
                         <Input prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} type="password" placeholder="Password" />
                     )}
                 </Form.Item>
+                <div>
+                    <a onClick={showForgotPasswordModal} href='#'>Forgot password?</a>
+                </div>
             </Form>
         </Modal>)
     }

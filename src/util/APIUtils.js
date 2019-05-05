@@ -134,3 +134,27 @@ export function updateProfile(profileRequest) {
         body: JSON.stringify(profileRequest)
     })
 }
+
+export function resetPassword(email) {
+    return request({
+        url: `${API_BASE_URL}/employee/resetPassword`,
+        method: 'POST',
+        body: JSON.stringify(email)
+    })
+}
+
+export function savePasswordWithResetToken(passwordRequest) {
+    return request({
+        url: `${API_BASE_URL}/employee/savePasswordWithResetToken`,
+        method: 'POST',
+        body: JSON.stringify(passwordRequest)
+    })
+}
+
+export function changePasswordWithToken(passwordRequest) {
+    return request({
+        url: `${API_BASE_URL}/employee/changePasswordWithToken`,
+        method: 'POST',
+        body: JSON.stringify(passwordRequest)
+    })
+}

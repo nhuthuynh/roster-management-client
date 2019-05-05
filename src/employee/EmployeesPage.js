@@ -176,7 +176,7 @@ export default class EmployeesPage extends Component {
 
     render () {
         const { employeesList, isShowModal, selectedRowKeys } = this.state
-        const { saveFormRef, addEmployee, resetForm, onSelectedRowKeysChange, showAddEmployeeModal, hideAddEmployeeModal, resignEmployees } = this
+        const { saveFormRef, addEmployee, onSelectedRowKeysChange, showAddEmployeeModal, hideAddEmployeeModal, resignEmployees } = this
         const rowSelection = {
             selectedRowKeys,
             onChange: onSelectedRowKeysChange,
@@ -193,7 +193,7 @@ export default class EmployeesPage extends Component {
                         })
                     }
                 />
-                <WrappedAddEmployeeModal wrappedComponentRef={saveFormRef} onCancel={hideAddEmployeeModal} visible={isShowModal} handleSubmit={addEmployee} resetForm={resetForm} />
+                <WrappedAddEmployeeModal wrappedComponentRef={saveFormRef} onCancel={hideAddEmployeeModal} visible={isShowModal} handleSubmit={addEmployee} />
             </div>
         )
     }
