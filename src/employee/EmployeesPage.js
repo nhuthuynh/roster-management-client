@@ -176,7 +176,7 @@ export default class EmployeesPage extends Component {
 
     render () {
         const { employeesList, isShowModal, selectedRowKeys } = this.state
-        const { saveFormRef, addEmployee, resetForm, onSelectedRowKeysChange, showAddEmployeeModal, hideAddEmployeeModal, resignEmployees } = this
+        const { saveFormRef, addEmployee, onSelectedRowKeysChange, showAddEmployeeModal, hideAddEmployeeModal, resignEmployees } = this
         const rowSelection = {
             selectedRowKeys,
             onChange: onSelectedRowKeysChange,
