@@ -79,7 +79,7 @@ export function isValidTime(time, reg) {
 }
 
 /**
- * Given an an array of objects, return new value-copied array of objects
+ * Given an array of objects, return new value-copied array of objects
  * @param {Array} array - array of objects
  */
 
@@ -93,4 +93,20 @@ export function copyArray(array) {
     }
 
     return newArray
+}
+
+/**
+ * Given a url search string from url, return object with employeeId and token
+ * @param {String} url - search string in 
+ */
+
+export function getEmployeeIdAndTokenFromUrl(url) {
+    if (url && url.indexOf('employeeId') > 0 && url.indexOf('token') > 0) {
+        let values = url.split('&')
+        return {
+            employeeId: values[0].replace('?employeeId=', ''),
+            token: values[1].replace('token=', '')
+        }
+    }
+    return {}
 }
