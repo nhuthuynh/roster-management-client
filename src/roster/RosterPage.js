@@ -35,6 +35,7 @@ class Roster extends Component {
             isLoading: true
         });
         let dates = getFirstAndLastDayOfWeek(new Date(), false);
+        
         const { currentUser } = this.props
         const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
 
@@ -46,11 +47,11 @@ class Roster extends Component {
                 isLoading: false
             })
         }).catch((error) => {
-            /*notification.error({
-                message: 'Roster',
+            notification.error({
+                message: 'CEMS',
                 description: error,
                 duration: 2
-            });*/
+            });
         });
     }
 
@@ -154,6 +155,10 @@ class Roster extends Component {
 
     saveRoster = () => {
         let { events, roster, shiftList } = this.state;
+        let dates = getFirstAndLastDayOfWeek(new Date(), false);
+
+        const { currentUser } = this.props
+        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
 
         if (events.length === 0 || shiftList.length === 0) {
             notification.error({
@@ -163,15 +168,20 @@ class Roster extends Component {
             });
             return;
         }
+
         roster.shiftList = [];
 
         Object.keys(shiftList).forEach((key) => {
             roster.shiftList.push({
                 date: key,
                 employeeShifts: shiftList[key]
-            });
-        });
+            })
+        })
 
+        roster.shopOwnerId = shopOwnerId
+        roster.fromDate = getDate(dates.firstDate)
+        roster.toDate = getDate(dates.lastDate)
+        
         let promise;
         promise = createRoster(roster);
 
