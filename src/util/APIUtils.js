@@ -158,3 +158,11 @@ export function changePasswordWithToken(passwordRequest) {
         body: JSON.stringify(passwordRequest)
     })
 }
+
+export function submitLeaveRequest(leaveRequest) {
+    return request({
+        url: `${API_BASE_URL}/leaveRequest/submit`,
+        method: 'POST',
+        body: JSON.stringify(leaveRequest)
+    })
+}

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { React, Component } from 'antd'
 import {  } from '../util/APIUtils'
-
+import LeaveSubmissionForm from './LeaveSubmissionForm'
 
 import './leave.css'
 
@@ -19,7 +19,7 @@ export default class EmployeesPage extends Component {
             <div className="leave-container">
                 <h1 className="page-title">leave management</h1>
                 <div className="page-body">
-                    
+
                 </div>
         </div>
         )
