@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 export function getDate(theDate) {
     let date = new Date();
     date.setTime(theDate);
@@ -109,4 +111,17 @@ export function getEmployeeIdAndTokenFromUrl(url) {
         }
     }
     return {}
+}
+
+export function range(start, end) {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i)
+    }
+    return result
+}
+
+export function disabledDate(current) {
+    // Can not select days before today and today
+    return current && current < moment().endOf('day')
 }

@@ -58,7 +58,7 @@ class AddEmployeeModal extends Component {
                                     )
                             }
                         </Form.Item>
-                        <Form.Item label="Employee type">
+                        <Form.Item label="Employee role">
                             {
                                 getFieldDecorator('role', {
                                     rules: [
