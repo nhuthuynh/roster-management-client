@@ -161,8 +161,38 @@ export function changePasswordWithToken(passwordRequest) {
 
 export function submitLeaveRequest(leaveRequest) {
     return request({
-        url: `${API_BASE_URL}/leaveRequest/submit`,
+        url: `${API_BASE_URL}/leaveRequest/submission`,
         method: 'POST',
         body: JSON.stringify(leaveRequest)
+    })
+}
+
+export function denyLeaveRequest(updateLeaveRequest) {
+    return request({
+        url: `${API_BASE_URL}/leaveRequest/denial`,
+        method: 'POST',
+        body: JSON.stringify(updateLeaveRequest)
+    })
+}
+
+export function approveLeaveRequest(updateLeaveRequest) {
+    return request({
+        url: `${API_BASE_URL}/leaveRequest/approval`,
+        method: 'POST',
+        body: JSON.stringify(updateLeaveRequest)
+    })
+}
+
+export function loadEmployeesLeaveRequests(shopOwnerId) {
+    return request({
+        url: `${API_BASE_URL}/leaveRequest/shopOwner/${shopOwnerId}/employees`,
+        method: 'GET'
+    })
+}
+
+export function loadLeaveRequestsInfoOfAnEmployee(employeeId) {
+    return request({
+        url: `${API_BASE_URL}/leaveRequest/employees/${employeeId}`,
+        method: 'GET'
     })
 }

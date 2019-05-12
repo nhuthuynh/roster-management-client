@@ -42,13 +42,28 @@ export const TITLE_SIGN_IN = "sign in"
 export const TITLE_SIGN_UP = "sign up"
 
 export const ROUTES = {
-  employees: "/employees",
-  roster: "/roster",
-  availability: "/availability",
-  leave: "/leave",
-  profile: "/profile",
-  changePassword: "/changePassword",
-  resetPassword: "/resetPassword"
+    employees: "/employees",
+    roster: "/roster",
+    availability: "/availability",
+    leave: "/leave",
+    profile: "/profile",
+    changePassword: "/changePassword",
+    resetPassword: "/resetPassword",
+    report: "/report"
 }
 
 export const REG_TIME_FORMAT = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
+
+export const LEAVE_STATUS = {
+  pending: 'LEAVE_PENDING',
+  approve: 'LEAVE_APPROVED',
+  deny: 'LEAVE_DENIED'
+}
+
+export const LEAVE_STATUS_VALUES = {
+  'LEAVE_PENDING': 'pending',
+  'LEAVE_APPROVED': 'approved',
+  'LEAVE_DENIED': 'denied'
+}
+
+export const DATE_MOMENT_FORMART = 'DD-MM-YYYY'

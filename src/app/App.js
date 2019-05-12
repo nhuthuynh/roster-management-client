@@ -15,6 +15,7 @@ import ResetPasswordPage from '../employee/ResetPasswordPage'
 import WrappedSignUpModal from '../employee/SignUpModal'
 import WrappedSignInModal from '../employee/SignInModal'
 import WrappedForgotPasswordModal from '../employee/ForgotPasswordModal'
+import LeavePage from '../leave/LeavePage'
 import NotFound from '../common/NotFound'
 import { Layout, notification } from 'antd'
 import LoadingIndicator from '../common/LoadingIndicator'
@@ -274,6 +275,7 @@ class App extends Component {
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.availability} component={AvailabilityPage}/>
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.profile} component={ProfilePage}/>
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.changePassword} component={ChangePasswordPage}/>
+                            <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.leave} component={LeavePage}/>
                             <Route component={ ResetPasswordPage } path={ ROUTES.resetPassword }/>
                             <Route component={ NotFound } />
                         </Switch>

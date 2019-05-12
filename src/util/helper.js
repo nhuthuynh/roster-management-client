@@ -121,7 +121,12 @@ export function range(start, end) {
     return result
 }
 
-export function disabledDate(current) {
+export function disabledToDate(current) {
     // Can not select days before today and today
-    return current && current < moment().endOf('day')
+    return current < moment().endOf('day')
+}
+
+export function getShopOwnerId(currentUser) {
+    if (!currentUser) return ""
+    return currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
 }
