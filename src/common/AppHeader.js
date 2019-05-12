@@ -23,7 +23,8 @@ class AppHeader extends Component {
                 <Menu.Item key="/"><Link to="/"><span>Home</span></Link></Menu.Item>,
                 <Menu.Item key={ROUTES.employees}><Link to={ROUTES.employees}><span>Employees</span></Link></Menu.Item>,
                 <Menu.Item key={ROUTES.roster}><Link to={ROUTES.roster}><span>Roster</span></Link></Menu.Item>,
-                <Menu.Item key={ROUTES.availability}><Link to={ROUTES.availability}><span>Availability</span></Link></Menu.Item>
+                <Menu.Item key={ROUTES.availability}><Link to={ROUTES.availability}><span>Availability</span></Link></Menu.Item>,
+                <Menu.Item key={ROUTES.leave}><Link to={ROUTES.leave}><span>Leaves</span></Link></Menu.Item>
             ]
         }
         else
