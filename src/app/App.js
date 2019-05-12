@@ -20,6 +20,7 @@ import NotFound from '../common/NotFound'
 import { Layout, notification } from 'antd'
 import LoadingIndicator from '../common/LoadingIndicator'
 import PrivateRoute from '../common/PrivateRoute'
+import ReportPage from '../report/ReportPage'
 
 import { signUp, signIn, getCurrentUser, resetPassword } from '../util/APIUtils'
 
@@ -276,6 +277,7 @@ class App extends Component {
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.profile} component={ProfilePage}/>
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.changePassword} component={ChangePasswordPage}/>
                             <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.leave} component={LeavePage}/>
+                            <PrivateRoute isAuthenticated={isAuthenticated} currentUser={currentUser} onUnauthorized={showUnauthorizedMessage} path={ROUTES.report} component={ReportPage}/>
                             <Route component={ ResetPasswordPage } path={ ROUTES.resetPassword }/>
                             <Route component={ NotFound } />
                         </Switch>
