@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { loadLeaveRequestsInfoOfAnEmployee } from '../util/APIUtils'
 import { notification } from 'antd'
 import LeaveInfo from '../leave/LeaveInfo'
-import EmployeeSelection from '../common/EmployeesSelection';
+import EmployeeSelection from '../common/EmployeesSelection'
 
 export default class EmployeesPage extends Component {
     state = {

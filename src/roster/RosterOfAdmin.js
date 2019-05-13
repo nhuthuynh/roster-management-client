@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
-import { loadRoster, createRoster, loadWorkingEmployees } from '../util/APIUtils';
+import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities } from '../util/APIUtils';
 import { getHoursAndMinuteOfDate, getSmallerDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
 import './roster.css';
 import './react-big-calendar.css';
-import { Button, List, Affix, notification } from 'antd';
+import { Button, notification } from 'antd';
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
 import { getShopOwnerId } from '../util/helper'
-
+import EmployeeSelection from '../common/EmployeesSelection'
 
 class RosterOfAdmin extends Component {
     constructor() {
@@ -40,11 +40,10 @@ class RosterOfAdmin extends Component {
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        Promise.all([loadWorkingEmployees(shopOwnerId), loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId)]).then((values)=> {
-            this.setState({
-                employees: values[0],
-                roster: values[1] ? values[1] : {},
-                events: values[1] && values[1]["shiftList"] ? this.convertStringToDateInShiftList(values[1]["shiftList"]) : [],
+        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((values)=> {
+                this.setState({
+                roster: values ? values : {},
+                events: values && values["shiftList"] ? this.convertStringToDateInShiftList(values["shiftList"]) : [],
                 isLoading: false
             })
         }).catch((error) => {
@@ -236,9 +235,34 @@ class RosterOfAdmin extends Component {
         });
     }
 
+    onChangeEmployee = (employeeId) => {
+        this.setState((prevState) => ({
+            ...prevState,
+            isLoading: true
+        }))
+        Promise.all([loadAvailabilities(employeeId), loadEmployeeApprovedLeaveRequests(employeeId)]).then((values) => {
+            if (values && values[0] && values[1]) {
+                console.log(values)
+                this.setState((prevState) => ({
+                    ...prevState,
+                    isLoading: false
+                }))
+            } else {
+                notification.error({
+                    message: 'CEMS - Roster Management',
+                    description: 'There is an error!'
+                })
+            }
+        }).catch((error) => notification.error({
+            message: 'CEMS - Roster Management',
+            description: `Error: ${(error && error.message)}`
+        }))
+    }
+
     render() {
         return (
                 <div className="desc">
+                    <EmployeeSelection onChangeEmployee={this.onChangeEmployee} currentUser={this.props.currentUser} />
                     <BigCalendar
                         selectable={this.state.isCalendarClickable}
                         localizer={BigCalendar.momentLocalizer(moment)}
@@ -250,10 +274,6 @@ class RosterOfAdmin extends Component {
                         onSelectSlot={this.timeSelect}
                         onNavigate={this.onNavigate}
                     />
-                    <Affix style={{ position: 'absolute', top: 64, right: 10}} className={"employee-list-affix"}>
-                        <h2>Employees</h2>
-                        <List dataSource={this.state.employees} renderItem={item => (<List.Item><Button disabled={!this.state.isEmployeeSelectable} onClick={()=>{this.selectEmployee(item)}}>{ item.firstName }</Button></List.Item>)}/>
-                    </Affix>
                     <Button className="go-back-btn" type="primary" size="large" onClick={this.saveRoster}>Save roster</Button>
                 </div>
         );
