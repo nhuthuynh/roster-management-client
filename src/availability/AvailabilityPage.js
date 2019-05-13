@@ -94,7 +94,6 @@ export default class AvailabilityPage extends Component {
     cancelEditMode = () => {
         this.setState((prevState) => {
             const { originalAvailabilityList } = prevState
-            console.log(prevState)
             return {
                 ...prevState,
                 mode: "view",
@@ -180,7 +179,6 @@ export default class AvailabilityPage extends Component {
             let { availabilityList } = prevState
             let { available } = availabilityList[index]
             availabilityList[index].available = !available
-            console.log(prevState)
             return {
                 ...prevState,
                 availabilityList
