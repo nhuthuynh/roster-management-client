@@ -5,6 +5,10 @@
     width: 20%;
 }
 
+.leave-info-box .sub-title {
+    border-bottom: 1px solid #e8e8e8;
+}
+
 .leave-container .action-btn {
     display: inline-block;
     margin: 0 5px;
