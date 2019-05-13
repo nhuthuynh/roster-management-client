@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Table } from 'antd'
 
-export default class EmployeesLeaveRequestLists extends PureComponent {
+export default class EmployeesLeaveRequest extends PureComponent {
     state = {
         columns: [{
             title: 'First Name',
@@ -27,8 +27,8 @@ export default class EmployeesLeaveRequestLists extends PureComponent {
             dataIndex: 'id',
             render: (text, record, index) => 
             (<div>
-                <a href="#" onClick={() => this.props.approveLeaveRequest(record.id)}>Approve</a>
-                <a href="#" onClick={() => this.props.denyLeaveRequest(record.id)}>Deny</a>
+                <a href="#" className="link-btn action-btn" onClick={() => this.props.approveLeaveRequest(record.id)}>Approve</a>
+                <a href="#" className="link-btn action-btn" onClick={() => this.props.denyLeaveRequest(record.id)}>Deny</a>
             </div>)
         }]
     }

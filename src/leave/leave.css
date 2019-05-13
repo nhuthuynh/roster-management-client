@@ -1,0 +1,15 @@
+.leave-container .leave-info-box {
+    border: 1px solid #e8e8e8;
+    margin: 10px 0;
+    padding: 5px;
+    width: 20%;
+}
+
+.leave-info-box .sub-title {
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.leave-container .action-btn {
+    display: inline-block;
+    margin: 0 5px;
+}

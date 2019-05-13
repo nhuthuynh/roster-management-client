@@ -16,7 +16,6 @@ export default class EmployeesPage extends Component {
     }
 
     renderEmployeesOption = (item, index) => {
-        console.log(item)
         return <Option key={index} value={item.id}>{`${item.firstName} ${item.lastName}`}</Option> 
     }
 
@@ -45,7 +44,6 @@ export default class EmployeesPage extends Component {
             }))
 
         loadLeaveRequestsInfoOfAnEmployee(id).then((response) => {
-            console.log(response)
             this.setState((prevState) => ({
                 ...prevState,
                 leaveInfo: response

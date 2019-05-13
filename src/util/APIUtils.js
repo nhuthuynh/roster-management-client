@@ -202,3 +202,10 @@ export function loadLeaveRequestsInfoOfAnEmployee(employeeId) {
         method: 'GET'
     })
 }
+
+export function loadEmployeesLeaveRequestsForManager(shopOwnerId) {
+    return request({
+        url: `${API_BASE_URL}/leaveRequest/shopOwner/${shopOwnerId}/manager/employees`,
+        method: 'GET'
+    })
+}
