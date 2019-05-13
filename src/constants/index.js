@@ -67,3 +67,12 @@ export const LEAVE_STATUS_VALUES = {
 }
 
 export const DATE_MOMENT_FORMART = 'DD-MM-YYYY'
+export const DAYS_IN_WEEK_IN_VALUES = {
+  'sunday': 0,
+  'monday': 1,
+  'tuesday': 2,
+  'wednesday': 3,
+  'thursday': 4,
+  'friday': 5,
+  'saturday': 6
+}
