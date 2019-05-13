@@ -31,6 +31,12 @@ export function loadEmployees(shopOwnerId) {
     });
 }
 
+export function loadWorkingEmployees(shopOwnerId) {
+    return request({
+        url: `${API_BASE_URL}/roster/shopOwner/${shopOwnerId}/employees`,
+        method: 'GET'
+    });
+}
 
 export function loadRoster(fromDate, toDate, shopOwnerId) {
     return request({
