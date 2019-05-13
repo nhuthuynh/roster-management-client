@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { loadRoster, createRoster, loadEmployees } from '../util/APIUtils';
+import { loadRoster, createRoster, loadWorkingEmployees } from '../util/APIUtils';
 import { getHoursAndMinuteOfDate, getSmallerDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
 import './roster.css';
 import './react-big-calendar.css';
@@ -40,7 +40,7 @@ class RosterOfAdmin extends Component {
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        Promise.all([loadEmployees(shopOwnerId), loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId)]).then((values)=> {
+        Promise.all([loadWorkingEmployees(shopOwnerId), loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId)]).then((values)=> {
             this.setState({
                 employees: values[0],
                 roster: values[1] ? values[1] : {},
