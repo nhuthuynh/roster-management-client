@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { loadRoster } from '../util/APIUtils';
 import { getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
-import './roster.css';
-import './react-big-calendar.css';
 import { notification } from 'antd';
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'

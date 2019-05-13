@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities } from '../util/APIUtils';
 import { getHoursAndMinuteOfDate, getSmallerDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
-import './roster.css';
-import './react-big-calendar.css';
 import { Button, notification } from 'antd';
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
@@ -242,10 +240,11 @@ class RosterOfAdmin extends Component {
         }))
         Promise.all([loadAvailabilities(employeeId), loadEmployeeApprovedLeaveRequests(employeeId)]).then((values) => {
             if (values && values[0] && values[1]) {
-                console.log(values)
                 this.setState((prevState) => ({
                     ...prevState,
-                    isLoading: false
+                    isLoading: false,
+                    isCalendarClickable: true,
+                    businessHours: this.buildBusinessHours(values[0])
                 }))
             } else {
                 notification.error({
@@ -259,22 +258,38 @@ class RosterOfAdmin extends Component {
         }))
     }
 
+    buildBusinessHours = (availabilities) => {
+        return availabilities && availabilities.length === 0 ? [] : availabilities.map((item, index) => ({  }))
+    }
+
     render() {
+        const { onChangeEmployee, timeSelect, onNavigate, saveRoster } = this
+        const { events, isCalendarClickable, businessHours } = this.state
+        const { currentUser } = this.props
         return (
                 <div className="desc">
-                    <EmployeeSelection onChangeEmployee={this.onChangeEmployee} currentUser={this.props.currentUser} />
+                    <EmployeeSelection onChangeEmployee={onChangeEmployee} currentUser={currentUser} />
                     <BigCalendar
-                        selectable={this.state.isCalendarClickable}
+                        selectable={isCalendarClickable}
                         localizer={BigCalendar.momentLocalizer(moment)}
-                        events={this.state.events}
+                        events={events}
                         startAccessor="start"
                         endAccessor="end"
                         defaultView="week"
                         views={{week:true}}
-                        onSelectSlot={this.timeSelect}
-                        onNavigate={this.onNavigate}
+                        onSelectSlot={timeSelect}
+                        onNavigate={onNavigate}
+                        businessHours={[{
+                            dow: [0, 1, 2, 3, 4, 5, 6], // Sunday, Monday, Tuesday, Wednesday...
+                            start: "08:30", // 8am
+                            end: "12:30" // 12pm
+                          }, {
+                            dow: [0, 1, 2], // Sunday, Monday, Tuesday, Wednesday...
+                            start: "14:30", // 2pm
+                            end: "20:00" // 8pm
+                          }]}
                     />
-                    <Button className="go-back-btn" type="primary" size="large" onClick={this.saveRoster}>Save roster</Button>
+                    <Button className="go-back-btn" type="primary" size="large" onClick={saveRoster}>Save roster</Button>
                 </div>
         );
     }
