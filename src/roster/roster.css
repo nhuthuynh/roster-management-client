@@ -1,3 +1,7 @@
-.employee-list-affix {
-    width: 10%;
+.roster-container .rbc-current-time-indicator{
+    display: none;
 }
+
+.roster-container .rbc-date-cell.rbc-disabled{
+    background: #ebedfa;
+  }
