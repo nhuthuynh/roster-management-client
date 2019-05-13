@@ -38,7 +38,7 @@ export default class EmployeeSelection extends Component {
 
     render () {
         const { renderSelectItem } = this
-        const { onChangeEmployee, data } = this.props
+        const { onChangeEmployee } = this.props
         const { employees } = this.state
 
         return (
