@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "antd": "^3.10.1",
-    "react-big-calendar": "github:incubity/react-big-calendar",
     "react-router-dom": "^4.3.1"
   },
   "scripts": {
@@ -24,10 +23,12 @@
   ],
   "devDependencies": {
     "babel-plugin-import": "^1.9.1",
+    "date-arithmetic": "^3.1.0",
     "moment": "^2.22.2",
     "react": "^16.5.2",
     "react-app-rewire-less": "^2.1.3",
     "react-app-rewired": "^1.6.2",
+    "react-big-calendar": "^0.21.0",
     "react-dom": "^16.5.2",
     "react-scripts": "^2.0.4"
   }

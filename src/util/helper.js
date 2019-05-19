@@ -66,6 +66,7 @@ export function getFirstAndLastDayOfWeek(date, mon) {
 export function formatNumberWithLeadingZero(hour, minute) {
     hour = hour < 10 ? `0${hour}` : hour
     minute = minute < 10 ? `0${minute}` : minute
+    console.log(hour, minute)
     return `${hour}:${minute}`
 }
 

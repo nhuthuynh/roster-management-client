@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities, loadWorkingEmployees } from '../util/APIUtils';
-import { getHoursAndMinuteOfDate, getSmallerDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
+import { getHoursAndMinuteOfDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
 import { Button, notification } from 'antd'
 import BigCalendar from 'react-big-calendar'
 import moment from 'moment'
@@ -44,35 +44,57 @@ class RosterOfAdmin extends Component {
         const shopOwnerId = getShopOwnerId(currentUser)
 
         Promise.all([loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId), loadWorkingEmployees(shopOwnerId)]).then((values)=> {
-                this.setState({
+                this.setState((prevState) => ({
+                ...prevState,
                 roster: values[0] ? values[0] : {},
-                events: values[0] && values[0]["shiftList"] ? this.convertStringToDateInShiftList(values[0]["shiftList"]) : [],
+                events: this.convertStringToDateInShiftList(values[0]["shiftList"]),
                 employees: values[1] ? [{ id: 0, firstName: '', lastName: '' }].concat(values[1]) : {},
+                shiftList: this.convertShiftList(values[0] && values[0]["shiftList"]),
                 isLoading: false
-            })
+            }))
         }).catch((error) => {
             notification.error({
-                message: 'CEMS',
-                description: error
+                message: 'CEMS - Roster',
+                description: `${(error && error.message ? error.message : 'There some errors loading data!')}`
             });
         });
     }
 
-    convertStringToDateInShiftList = (shiftList) => {
-        if (!shiftList) return;
+    convertShiftList = (shiftList) => {
+        let newShiftList = []
 
-        return shiftList.map((el) => {
-            return {
+        shiftList && shiftList.length > 0 && shiftList.forEach((eachShift) => {
+            
+            let startDate = eachShift.start.split(" ")[0]
+            let startTime = eachShift.start.split(" ")[1]
+            let endTime = eachShift.end.split(" ")[1]
+            if(!newShiftList[startDate]) {
+                newShiftList[startDate] = []
+            }
+            newShiftList[startDate].push({
+                "startTime": startTime,
+                "endTime": endTime,
+                "note": "",
+                "employeeId": eachShift.employeeId
+            })
+            console.log(newShiftList)
+        })
+        
+        return newShiftList
+    }
+
+    convertStringToDateInShiftList = (shiftList) => {
+        return shiftList && shiftList.length > 0 ? shiftList.map((el) => ({
                 ...el,
                 start: new Date(switchPositionBetweenDayAndMonth(el.start)),
                 end: new Date(switchPositionBetweenDayAndMonth(el.end))
-            }
-        });
+            })
+        ) : []
     }
 
     timeSelect = ({ start, end }) => {
         let { events, roster, shiftList, employees, selectedEmployeeId } = this.state;
-
+        
         if (!selectedEmployeeId) return
 
         let selectedEvents = {}
@@ -81,15 +103,12 @@ class RosterOfAdmin extends Component {
         selectedEvents = {
             start,
             end,
-            title: `${employee.firstName} ${employee.lastName}`
+            title: `${employee.firstName} ${employee.lastName}`,
+            employeeId: selectedEmployeeId  
         }
 
         events.push(selectedEvents)
-
-        roster.fromDate = roster.fromDate ? getSmallerDate(selectedEvents.start, roster.fromDate) : getDate(selectedEvents.start)
-        roster.toDate = roster.toDate ? getSmallerDate(selectedEvents.end, roster.toDate) : getDate(selectedEvents.end)
-        roster.createdDate = getDate(new Date())
-
+        console.log(selectedEvents.start, getDate(selectedEvents.start))
         if(!shiftList[getDate(selectedEvents.start)]) {
             shiftList[getDate(selectedEvents.start)] = []
         }
@@ -99,7 +118,7 @@ class RosterOfAdmin extends Component {
             "note": "",
             "employeeId": selectedEmployeeId
         })
-
+        
         this.setState((prevState) => ({
             ...prevState,
             events,
@@ -107,77 +126,13 @@ class RosterOfAdmin extends Component {
             shiftList
         }))
     }
-    
-    selectEmployee = (employee) => {
-        let { events, roster, shiftList } = this.state;
-        if (events.length > 0) {
-            let selectedEvents = events[events.length - 1];
-
-            selectedEvents.title = `${employee.firstName} ${employee.lastName}`;
-            selectedEvents.employeeId = employee.id;
-            events[events.length - 1] = selectedEvents;
-
-            roster.fromDate = roster.fromDate ? getSmallerDate(selectedEvents.start, roster.fromDate) : getDate(selectedEvents.start);
-            roster.toDate = roster.toDate ? getSmallerDate(selectedEvents.end, roster.toDate) : getDate(selectedEvents.end);
-            roster.createdDate = getDate(new Date());
-
-            if(!shiftList[getDate(selectedEvents.start)]) {
-                shiftList[getDate(selectedEvents.start)] = [];
-            }
-            shiftList[getDate(selectedEvents.start)].push({
-                "startTime": getHoursAndMinuteOfDate(selectedEvents.start),
-                "endTime": getHoursAndMinuteOfDate(selectedEvents.end),
-                "note": "",
-                "employeeId": employee.id
-            });
-
-            this.setState({
-                events,
-                roster,
-                shiftList
-            });
-        }
-    }
-
-    updateShiftList = () => {
-
-        let { roster, events, shiftList } = this.state;
-
-        if (!events || events.length === 0) return [];
-
-        events.forEach(ev => {
-            roster.fromDate = roster.fromDate ? getSmallerDate(ev.start, roster.fromDate) : getDate(ev.start);
-            roster.toDate = roster.toDate ? getSmallerDate(ev.end, roster.toDate) : getDate(ev.end);
-
-            if(!shiftList[getDate(ev.start)]) {
-                shiftList[getDate(ev.start)] = [];
-            }
-            
-            shiftList[getDate(ev.start)].push({
-                "startTime": getHoursAndMinuteOfDate(ev.start),
-                "endTime": getHoursAndMinuteOfDate(ev.end),
-                "note": "",
-                "employeeId": ev.id
-            });
-        });
-        return shiftList;
-    }
 
     saveRoster = () => {
-        let { events, roster, shiftList } = this.state;
+        let { roster, shiftList } = this.state;
         let dates = getFirstAndLastDayOfWeek(new Date(), false);
 
         const { currentUser } = this.props
         const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
-
-        if (events.length === 0 || shiftList.length === 0) {
-            notification.error({
-                message: 'Roster',
-                description: 'Please select at least a shift and an employee for create roster!',
-                duration: 5
-            });
-            return;
-        }
 
         roster.shiftList = [];
 
@@ -191,6 +146,7 @@ class RosterOfAdmin extends Component {
         roster.shopOwnerId = shopOwnerId
         roster.fromDate = getDate(dates.firstDate)
         roster.toDate = getDate(dates.lastDate)
+        roster.createdDate = getDate(new Date())
         
         let promise;
         promise = createRoster(roster);
@@ -202,25 +158,23 @@ class RosterOfAdmin extends Component {
         promise.then(response => {
             if (response.success) {
                 notification.success({
-                    message: 'Roster',
+                    message: 'CEMS - Roster',
                     description: 'Create roster successfully!',
                     duration: 5
                 });
             } else {
                 notification.error({
-                    message: 'Roster',
-                    description: response.message,
+                    message: 'CEMS - Roster',
+                    description: `${(response && response.message ? response.message : 'Failed to create roster!')}`,
                     duration: 5
                 })
             }
 
-        }).catch(error => {
-            notification.error({
-                message: 'Roster',
-                description: error,
-                duration: 5
-            })
-        })
+        }).catch(error => notification.error({
+            message: 'CEMS - Roster',
+            description: `${(error && error.message ? error.message : 'Failed to create roster!')}`,
+            duration: 5
+        }))
 
     }
 
