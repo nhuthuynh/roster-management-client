@@ -95,8 +95,8 @@ class RosterOfEmployee extends Component {
                         events={this.state.events}
                         startAccessor="start"
                         endAccessor="end"
-                        defaultView="week"
-                        views={{week:true}}
+                        defaultView={BigCalendar.Views.WEEK}
+                        views={[BigCalendar.Views.WEEK]}
                         onNavigate={this.onNavigate}
                     />
             </div>
