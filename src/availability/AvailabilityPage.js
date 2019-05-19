@@ -135,7 +135,7 @@ export default class AvailabilityPage extends Component {
             const { availabilityList } = this.state
             notification.error({
                 message: "CEMS",
-                description: "Please enter a number in format HH:mm"
+                description: "Please enter a number in format HH:mm and is not greater than 23: 59"
             })
             
             e.target.value = formatNumberWithLeadingZero(availabilityList[index][`${prefixTime}Hour`], availabilityList[index][`${prefixTime}Minute`])
