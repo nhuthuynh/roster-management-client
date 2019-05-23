@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import RosterOfAdmin from './RosterOfAdmin'
 import RosterOfEmployee from './RosterOfEmployee'
 import { EMPLOYEE_ROLES } from '../constants'
+import './react-big-calendar.css'
+import './roster.css'
 
 class Roster extends Component {
 

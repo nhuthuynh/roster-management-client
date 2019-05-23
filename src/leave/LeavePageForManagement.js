@@ -12,8 +12,11 @@ export default class LeavePageForManagement extends Component {
     }
 
     componentDidMount() {
-        const { currentUser } = this.props
+        this.loadEmployeesBasedOnRole()
+    }
 
+    loadEmployeesBasedOnRole = () => {
+        const { currentUser } = this.props
         if ( currentUser.role === EMPLOYEE_ROLES.admin ) {
             this.loadEmployeesLeaveRequests(loadEmployeesLeaveRequests, getShopOwnerId(currentUser))
         } else {
@@ -43,7 +46,7 @@ export default class LeavePageForManagement extends Component {
                     message: 'CEMS - Leave Management',
                     description: `Leave request is approved!`    
                 })
-                this.loadEmployeesLeaveRequests(getShopOwnerId(currentUser))
+                this.loadEmployeesBasedOnRole()
             }
         }).catch((error) => {
             notification.error({
@@ -61,7 +64,7 @@ export default class LeavePageForManagement extends Component {
                     message: 'CEMS - Leave Management',
                     description: `Leave request is denied!`    
                 })
-                this.loadEmployeesLeaveRequests(getShopOwnerId(currentUser))
+                this.loadEmployeesBasedOnRole()
             }
         }).catch((error) => {
             notification.error({
@@ -72,7 +75,7 @@ export default class LeavePageForManagement extends Component {
     }
 
     render() {
-        const { approveLeaveRequest, denyLeaveRequest } = this.props
+        const { approveLeaveRequest, denyLeaveRequest } = this
         const { employeesLeaveRequests } = this.state
         return (
             <EmployeesLeaveRequests data={employeesLeaveRequests} approveLeaveRequest={approveLeaveRequest} denyLeaveRequest={denyLeaveRequest} />

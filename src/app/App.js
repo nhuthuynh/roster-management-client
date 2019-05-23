@@ -21,7 +21,6 @@ import { Layout, notification } from 'antd'
 import LoadingIndicator from '../common/LoadingIndicator'
 import PrivateRoute from '../common/PrivateRoute'
 import ReportPage from '../report/ReportPage'
-
 import { signUp, signIn, getCurrentUser, resetPassword } from '../util/APIUtils'
 
 import { ACCESS_TOKEN, EMPLOYEE_ROLES, EMPLOYEE_TYPES, TITLE_SIGN_IN, TITLE_SIGN_UP, ROUTES } from '../constants'

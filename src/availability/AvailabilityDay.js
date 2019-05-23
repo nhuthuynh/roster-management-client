@@ -14,7 +14,7 @@ export default class AvailabilityDay extends PureComponent {
                 <span className="time-control-item">from</span>
                 {
                     mode === "view" ? 
-                    <label className="ant-input time-control-item time-control-input startTime">{startTime}</label>
+                    <label className="time-control-item time-control-input startTime">{startTime}</label>
                     :
                     <Tooltip trigger={['focus']} title={startTimeTooltipValue} placement="topLeft" overlayClassName="numeric-input">
                         <Input className="time-control-item time-control-input startTime" defaultValue={startTime} onChange={(e) => onInputChange(e, index, "start")} onBlur={(e) => onInputBlur(e, index, "start")} />
@@ -23,7 +23,7 @@ export default class AvailabilityDay extends PureComponent {
                 <span className="time-control-item">to</span>
                 {
                     mode === "view" ? 
-                    <label className="ant-input time-control-item time-control-input startTime">{endTime}</label>
+                    <label className=" time-control-item time-control-input startTime">{endTime}</label>
                     :
                     <Tooltip trigger={['focus']} title={endTimeTooltipValue} placement="topLeft" overlayClassName="numeric-input">
                         <Input className="time-control-item time-control-input endTime" defaultValue={endTime} onChange={(e) => onInputChange(e, index, "end")} onBlur={(e) => onInputBlur(e, index, "end")} />
