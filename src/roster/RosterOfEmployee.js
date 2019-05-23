@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { loadRoster } from '../util/APIUtils';
 import { getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
 import { notification } from 'antd';
-import BigCalendar from 'react-big-calendar'
+import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
 import { getShopOwnerId } from '../util/helper'
 

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities, loadWorkingEmployees } from '../util/APIUtils';
 import { getHoursAndMinuteOfDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
 import { Button, notification } from 'antd'
-import BigCalendar from 'react-big-calendar'
+import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
 import { getShopOwnerId } from '../util/helper'
 import dates from '../util/dates'
