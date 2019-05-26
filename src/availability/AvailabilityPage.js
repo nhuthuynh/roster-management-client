@@ -199,11 +199,18 @@ export default class AvailabilityPage extends Component {
                         mode === "view" ? <Button className="btn-first" onClick={switchEditMode} type="primary">Edit</Button> : null
                     }
                     {
-                        mode !== "view" ? <Button className="btn-first" onClick={saveAvailabilities} type="primary">Save</Button> : null
-                    }
-                    {
                         mode !== "view" ? <Button onClick={cancelEditMode}>Cancel</Button> : null
                     }
+                    {
+                        mode !== "view" ? <Button className="btn-first" onClick={saveAvailabilities} type="primary">Save</Button> : null
+                    }
+                </div>
+                <div>
+                    <p></p>
+                    <p><u><b>Note</b></u>:</p>
+                    <p>Any changes after roster of weeks are made will only be affected by the week after the week of the last roster.</p>
+                    <p>Any temporarily changes, please contact to your supervisor.</p>
+                    <p>If the times are left as default (from 00:00 to 00:00), it will be considered as all day available.</p>
                 </div>
             </div>
         )
