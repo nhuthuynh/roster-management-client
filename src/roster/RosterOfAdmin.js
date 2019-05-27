@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities, loadWorkingEmployees } from '../util/APIUtils';
-import { getHoursAndMinuteOfDate, getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
-import { Button, notification } from 'antd'
+import { getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
+import { Button, notification, Popconfirm } from 'antd'
 import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
 import { getShopOwnerId } from '../util/helper'
@@ -43,13 +43,12 @@ class RosterOfAdmin extends Component {
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        Promise.all([loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId), loadWorkingEmployees(shopOwnerId)]).then((values)=> {
+        Promise.all([loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId), loadWorkingEmployees(shopOwnerId)]).then(([roster, employees])=> {
                 this.setState((prevState) => ({
                 ...prevState,
-                roster: values[0] ? values[0] : {},
-                events: this.convertStringToDateInShiftList(values[0]["shiftList"]),
-                employees: values[1] ? [{ id: 0, firstName: '', lastName: '' }].concat(values[1]) : {},
-                shiftList: this.convertShiftList(values[0] && values[0]["shiftList"]),
+                roster,
+                events: this.convertStringToDateInShiftList(roster.shiftList),
+                employees: employees ? [{ id: 0, firstName: '', lastName: '' }].concat(employees) : {},
                 isLoading: false
             }))
         }).catch((error) => {
@@ -60,40 +59,23 @@ class RosterOfAdmin extends Component {
         });
     }
 
-    convertShiftList = (shiftList) => {
-        let newShiftList = []
-
-        shiftList && shiftList.length > 0 && shiftList.forEach((eachShift) => {
-            
-            let startDate = eachShift.start.split(" ")[0]
-            let startTime = eachShift.start.split(" ")[1]
-            let endTime = eachShift.end.split(" ")[1]
-            if(!newShiftList[startDate]) {
-                newShiftList[startDate] = []
-            }
-            newShiftList[startDate].push({
-                "startTime": startTime,
-                "endTime": endTime,
-                "note": "",
-                "employeeId": eachShift.employeeId
-            })
-            console.log(newShiftList)
-        })
-        
-        return newShiftList
+    convertStringToDateInShiftList (shiftList) {
+        return shiftList && shiftList.length > 0 && shiftList.map((shift, index) => ({
+            ...shift,
+            start: new Date(shift.start),
+            end: new Date(shift.end),
+            index
+        }))
     }
 
-    convertStringToDateInShiftList = (shiftList) => {
-        return shiftList && shiftList.length > 0 ? shiftList.map((el) => ({
-                ...el,
-                start: new Date(switchPositionBetweenDayAndMonth(el.start)),
-                end: new Date(switchPositionBetweenDayAndMonth(el.end))
-            })
-        ) : []
+    checkWhetherSelectedEventIsOvelapped (selectedEvent, events) {
+        if (!selectedEvent || !events) return 
+
+        
     }
 
     timeSelect = ({ start, end }) => {
-        let { events, roster, shiftList, employees, selectedEmployeeId } = this.state;
+        let { events, roster, employees, selectedEmployeeId } = this.state;
         
         if (!selectedEmployeeId) return
 
@@ -103,38 +85,41 @@ class RosterOfAdmin extends Component {
         selectedEvents = {
             start,
             end,
-            title: `${employee.firstName} ${employee.lastName}`,
-            employeeId: selectedEmployeeId  
+            "title": `${employee.firstName} ${employee.lastName}`,
+            "employeeId": selectedEmployeeId,
+            index: events.length
         }
 
         events.push(selectedEvents)
-        console.log(selectedEvents.start, getDate(selectedEvents.start))
-        if(!shiftList[getDate(selectedEvents.start)]) {
-            shiftList[getDate(selectedEvents.start)] = []
-        }
-        shiftList[getDate(selectedEvents.start)].push({
-            "startTime": getHoursAndMinuteOfDate(selectedEvents.start),
-            "endTime": getHoursAndMinuteOfDate(selectedEvents.end),
-            "note": "",
-            "employeeId": selectedEmployeeId
-        })
         
         this.setState((prevState) => ({
             ...prevState,
             events,
             roster,
-            shiftList
         }))
     }
 
     saveRoster = () => {
-        let { roster, shiftList } = this.state;
-        let dates = getFirstAndLastDayOfWeek(new Date(), false);
+        let { roster, events } = this.state;
+        let firstAndLastDateOfWeek = getFirstAndLastDayOfWeek(new Date(), false)
+        let shiftList = {}
+        const shopOwnerId = getShopOwnerId(this.props.currentUser)
 
-        const { currentUser } = this.props
-        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
+        roster.shiftList = []
 
-        roster.shiftList = [];
+        events.forEach(event => {
+            const { start, end, employeeId } = event
+            const date = getDate(start)
+            
+            shiftList[date] = !shiftList[date] ? [] : shiftList[date]
+            
+            shiftList[date].push({
+                "start": start,
+                "end": end,
+                "note": "",
+                "employeeId": employeeId,
+            })
+        })
 
         Object.keys(shiftList).forEach((key) => {
             roster.shiftList.push({
@@ -144,24 +129,26 @@ class RosterOfAdmin extends Component {
         })
 
         roster.shopOwnerId = shopOwnerId
-        roster.fromDate = getDate(dates.firstDate)
-        roster.toDate = getDate(dates.lastDate)
+        roster.fromDate = getDate(firstAndLastDateOfWeek.firstDate)
+        roster.toDate = getDate(firstAndLastDateOfWeek.lastDate)
         roster.createdDate = getDate(new Date())
         
-        let promise;
-        promise = createRoster(roster);
-
-        this.setState({
+        this.setState((prevState) => ({
+            ...prevState,
             isLoading: true
-        });
+        }))
 
-        promise.then(response => {
+        createRoster(roster).then(response => {
             if (response.success) {
                 notification.success({
                     message: 'CEMS - Roster',
                     description: 'Create roster successfully!',
                     duration: 5
-                });
+                })
+                this.setState((prevState) => ({
+                    ...prevState,
+                    isLoading: false
+                }))
             } else {
                 notification.error({
                     message: 'CEMS - Roster',
@@ -179,18 +166,20 @@ class RosterOfAdmin extends Component {
     }
 
     onNavigate = (date, view) => {
-        let dates = getFirstAndLastDayOfWeek(date, false);
-        this.setState({
+        let firstAndLastDate = getFirstAndLastDayOfWeek(date, false)
+        const shopOwnerId = getShopOwnerId(this.props.currentUser)
+        this.setState((prevState) => ({
+            ...prevState,
             isLoading: true
-        })
-        const { currentUser } = this.props
-        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((roster) => {
-            this.setState({
+        }))
+
+        loadRoster(getDate(firstAndLastDate.firstDate), getDate(firstAndLastDate.lastDate), shopOwnerId).then((roster) => {
+            this.setState((prevState) => ({
+                ...prevState,
                 roster: roster ? roster : {},
-                events: roster.shiftList ? this.convertStringToDateInShiftList(roster.shiftList) : [],
+                events: this.convertStringToDateInShiftList(roster.shiftList),
                 isLoading: false
-            })
+            }))
         }).catch((error) => {
             notification.error({
                 message: 'Roster',
@@ -293,29 +282,54 @@ class RosterOfAdmin extends Component {
         return disabledDays
     }
 
+    // filter seleted event by index and re-index remaining events
+    removeEvent = (event) => {
+        const { events } = this.state
+        
+        let newEvents = events.filter(ev => ev.index !== event.index).map((ev, index) => ({ ...ev, index }))
+
+        this.setState(prevState => ({
+            ...prevState,
+            events: newEvents            
+        }))
+    }
+
     render() {
-        const { onChangeEmployee, timeSelect, onNavigate, saveRoster } = this
+        const { onChangeEmployee, timeSelect, onNavigate, saveRoster, onSelectEvent } = this
         const { events, isCalendarClickable, businessHours, employees, selectedEmployeeId, disabledDays } = this.state
         
         return (
-                <div className="desc">
-                    <EmployeeSelection data={employees} onDataChange={onChangeEmployee} value={selectedEmployeeId}/>
-                    <BigCalendar
-                        selectable={isCalendarClickable}
-                        localizer={BigCalendar.momentLocalizer(moment)}
-                        events={events}
-                        startAccessor="start"
-                        endAccessor="end"
-                        defaultView={BigCalendar.Views.WEEK}
-                        views={[BigCalendar.Views.WEEK]}
-                        onSelectSlot={timeSelect}
-                        onNavigate={onNavigate}
-                        businessHours={businessHours}
-                        disabledDays={disabledDays}
+            <div className="desc">
+                <EmployeeSelection data={employees} onDataChange={onChangeEmployee} value={selectedEmployeeId}/>
+                <BigCalendar
+                    selectable={isCalendarClickable}
+                    localizer={BigCalendar.momentLocalizer(moment)}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    defaultView={BigCalendar.Views.WEEK}
+                    views={[BigCalendar.Views.WEEK]}
+                    onSelectSlot={timeSelect}
+                    onNavigate={onNavigate}
+                    businessHours={businessHours}
+                    disabledDays={disabledDays}
+                    onSelectEvent={onSelectEvent}
+                    components={{
+                        event: Event.bind(this)
+                    }}
                     />
-                    <Button className="go-back-btn" type="primary" size="large" onClick={saveRoster}>Save roster</Button>
-                </div>
+                <Button className="btn-save-roster" type="primary" size="large" onClick={saveRoster}>Save roster</Button>
+            </div>
         );
     }
 }
+
+function Event({event}) {
+    return (
+        <Popconfirm title="Do you want to delete this shift？" okText="Yes" cancelText="No" onConfirm={() => this.removeEvent(event)}>
+            <div className="event-title-container">{event.title}</div>
+        </Popconfirm>
+    )
+  }
+
 export default RosterOfAdmin
