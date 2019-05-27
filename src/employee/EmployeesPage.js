@@ -123,7 +123,7 @@ export default class EmployeesPage extends Component {
             signUp(employee).then((response) => {
                 notification.success({
                     message: "CEMS",
-                    description: "You are successfully registered!"
+                    description: "New employee is added!"
                 })
                 hideAddEmployeeModal()
                 form.resetFields()

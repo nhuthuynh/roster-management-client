@@ -1,5 +1,6 @@
 .time-control-container {
     padding: 5px;
+    margin: 10px 0;
 }
 
 .time-control-container .time-control-item {
@@ -13,8 +14,14 @@
 }
 
 .time-control-container .time-control-input {
+    height: 32px;
+    padding: 4px 11px;
     display: inline-block;
     width: 10%;
+}
+
+.time-control-container label {
+    border: 1px solid transparent;
 }
 
 /* to prevent the arrow overflow the popup container,
