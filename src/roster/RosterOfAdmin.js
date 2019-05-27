@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities, loadWorkingEmployees } from '../util/APIUtils';
-import { getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
+import { getDate, getFirstAndLastDayOfWeek } from '../util/helper';
 import { Button, notification, Popconfirm } from 'antd'
 import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
