@@ -9,6 +9,7 @@ import dates from '../util/dates'
 import { DAYS_IN_WEEK_IN_VALUES } from '../constants'
 import EmployeeSelection from '../common/EmployeesSelection'
 
+moment.utc()
 class RosterOfAdmin extends Component {
     constructor() {
         super()
@@ -48,7 +49,7 @@ class RosterOfAdmin extends Component {
                 ...prevState,
                 roster,
                 events: this.convertStringToDateInShiftList(roster.shiftList),
-                employees: employees ? [{ id: 0, firstName: '', lastName: '' }].concat(employees) : {},
+                employees: [{ id: 0, firstName: '', lastName: '' }].concat(employees) || [],
                 isLoading: false
             }))
         }).catch((error) => {
@@ -65,7 +66,7 @@ class RosterOfAdmin extends Component {
             start: new Date(shift.start),
             end: new Date(shift.end),
             index
-        }))
+        })) || []
     }
 
     checkWhetherSelectedEventIsOvelapped (selectedEvent, events) {
@@ -264,19 +265,15 @@ class RosterOfAdmin extends Component {
 
     validateEachLeaveRequests = (disabledDays, leaveRequest) => {
         let { fromDate, toDate } = leaveRequest
-        fromDate = new Date(switchPositionBetweenDayAndMonth(fromDate))
-        toDate =  new Date(switchPositionBetweenDayAndMonth(toDate))
+        fromDate = getDate(fromDate)
+        toDate =  getDate(toDate)
         let diff = dates.diff(fromDate, toDate, 'day')
         if (diff === 0) {
             disabledDays.push(fromDate)
         } else {
-            disabledDays.push(fromDate)
-            for (let increaseDay = 1; increaseDay < diff; increaseDay++) {
-                let startDisableDay = dates.startOf(fromDate, 'day')
-                let nextDisableDay = dates.add(startDisableDay, increaseDay, 'day')
-                disabledDays.push(nextDisableDay)
-            }
-            disabledDays.push(toDate)
+            //disabledDays.push(fromDate)
+            disabledDays = dates.range(fromDate, toDate)
+            //disabledDays.push(toDate)
         }
 
         return disabledDays
