@@ -208,9 +208,10 @@ export default class AvailabilityPage extends Component {
                 <div>
                     <p></p>
                     <p><u><b>Note</b></u>:</p>
-                    <p>Any changes after roster of weeks are made will only be affected by the week after the week of the last roster.</p>
-                    <p>Any temporarily changes, please contact to your supervisor.</p>
-                    <p>If the times are left as default (from 00:00 to 00:00), it will be considered as all day available.</p>
+                    <p>Any changes to your availability will not affect currently existing roster. It will only be effective the week after the last created roster.</p>
+                    <p>For any temporary or urgent changes, please contact your supervisor.</p>
+                    <p>Please enter a maximum of 23:59 for end time.</p>
+                    <p>If the times are left as default (from 00:00 to 00:00), you will be considered available all day.</p>
                 </div>
             </div>
         )
