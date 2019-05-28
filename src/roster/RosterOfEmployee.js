@@ -6,7 +6,7 @@ import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
 import { getShopOwnerId } from '../util/helper'
 
-
+moment.utc()
 class RosterOfEmployee extends Component {
     constructor() {
         super()
