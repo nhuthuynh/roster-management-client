@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { loadRoster } from '../util/APIUtils';
-import { getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
+import { getDate, getFirstAndLastDayOfWeek } from '../util/helper';
 import { notification } from 'antd';
 import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
@@ -36,14 +36,13 @@ class RosterOfEmployee extends Component {
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((value)=> {
-            if (value)
-                this.setState((prevState) => ({
-                    ...prevState,
-                    roster: value,
-                    events: value["shiftList"] ? this.convertStringToDateInShiftList(value["shiftList"]) : [],
-                    isLoading: false
-                }))
+        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((roster)=> {
+            this.setState((prevState) => ({
+                ...prevState,
+                roster,
+                events: this.convertStringToDateInShiftList(roster.shiftList),
+                isLoading: false
+            })) 
         }).catch((error) => {
             notification.error({
                 message: 'CEMS',
@@ -53,30 +52,30 @@ class RosterOfEmployee extends Component {
     }
 
     convertStringToDateInShiftList = (shiftList) => {
-        if (!shiftList) return;
-
-        return shiftList.map((el) => {
-            return {
-                ...el,
-                start: new Date(switchPositionBetweenDayAndMonth(el.start)),
-                end: new Date(switchPositionBetweenDayAndMonth(el.end))
-            }
-        });
+        return shiftList.map((shift, index) => ({
+            ...shift,
+            start: new Date(shift.start),
+            end: new Date(shift.end),
+            index
+        }))
     }
 
     onNavigate = (date, view) => {
-        let dates = getFirstAndLastDayOfWeek(date, false);
-        this.setState({
+        this.setState((prevState) => ({
             isLoading: true
-        })
+        }))
+        let firstAndLastDate = getFirstAndLastDayOfWeek(date, false)
+        
         const { currentUser } = this.props
-        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((roster) => {
-            this.setState({
-                roster: roster ? roster : {},
-                events: roster.shiftList ? this.convertStringToDateInShiftList(roster.shiftList) : [],
+        const shopOwnerId = getShopOwnerId(currentUser)
+
+        loadRoster(getDate(firstAndLastDate.firstDate), getDate(firstAndLastDate.lastDate), shopOwnerId).then((roster) => {
+            this.setState((prevState) => ({
+                ...prevState,
+                roster,
+                events: this.convertStringToDateInShiftList(roster.shiftList),
                 isLoading: false
-            })
+            }))
         }).catch((error) => {
             notification.error({
                 message: 'Roster',

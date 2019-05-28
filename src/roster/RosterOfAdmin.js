@@ -36,9 +36,10 @@ class RosterOfAdmin extends Component {
     }
 
     loadData = () => {
-        this.setState({
+        this.setState((prevState) => ({
+            ...prevState,
             isLoading: true
-        });
+        }))
         let dates = getFirstAndLastDayOfWeek(new Date(), false);
         
         const { currentUser } = this.props
@@ -61,18 +62,12 @@ class RosterOfAdmin extends Component {
     }
 
     convertStringToDateInShiftList (shiftList) {
-        return shiftList && shiftList.length > 0 && shiftList.map((shift, index) => ({
+        return shiftList.map((shift, index) => ({
             ...shift,
             start: new Date(shift.start),
             end: new Date(shift.end),
             index
-        })) || []
-    }
-
-    checkWhetherSelectedEventIsOvelapped (selectedEvent, events) {
-        if (!selectedEvent || !events) return 
-
-        
+        }))
     }
 
     timeSelect = ({ start, end }) => {
