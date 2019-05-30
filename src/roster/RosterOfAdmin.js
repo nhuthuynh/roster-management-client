@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities, loadWorkingEmployees } from '../util/APIUtils';
+import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadWorkingEmployees, loadAvailabilitiesByEffectiveDateAndEmployeeId } from '../util/APIUtils';
 import { getDate, getFirstAndLastDayOfWeek } from '../util/helper';
 import { Button, notification, Popconfirm } from 'antd'
 import BigCalendar from '@nhuthuynh/react-big-calendar'
@@ -10,6 +10,7 @@ import { DAYS_IN_WEEK_IN_VALUES } from '../constants'
 import EmployeeSelection from '../common/EmployeesSelection'
 
 moment.utc()
+
 class RosterOfAdmin extends Component {
     constructor() {
         super()
@@ -20,10 +21,11 @@ class RosterOfAdmin extends Component {
             isEmployeeSelectable: false,
             isCalendarClickable: false,
             selectedEmployeeId: 0,
+            currentDate: moment(),
             roster: {
-                fromDate: new Date(),
-                toDate: new Date(),
-                createDate: new Date()
+                fromDate: moment(),
+                toDate: moment(),
+                createDate: moment()
             },
             shiftList: {},
             businessHours: [],
@@ -166,6 +168,7 @@ class RosterOfAdmin extends Component {
         const shopOwnerId = getShopOwnerId(this.props.currentUser)
         this.setState((prevState) => ({
             ...prevState,
+            currentDate: date,
             isLoading: true
         }))
 
@@ -201,19 +204,22 @@ class RosterOfAdmin extends Component {
             return
         }
 
+        const { currentDate } = this.state
+        const firstAndLastDateOfWeek = getFirstAndLastDayOfWeek(currentDate, false)
+
         this.setState((prevState) => ({
             ...prevState,
             isLoading: true
         }))
-        Promise.all([loadAvailabilities(employeeId), loadEmployeeApprovedLeaveRequests(employeeId)]).then((values) => {
-            if (values && values[0] && values[1]) {
+        Promise.all([loadAvailabilitiesByEffectiveDateAndEmployeeId(firstAndLastDateOfWeek.firstDate, employeeId), loadEmployeeApprovedLeaveRequests(employeeId)]).then(([availabilities, acceptedLeaveRequests]) => {
+            if (availabilities && acceptedLeaveRequests) {
                 this.setState((prevState) => ({
                     ...prevState,
                     isLoading: false,
                     isCalendarClickable: true,
                     selectedEmployeeId: employeeId,
-                    businessHours: this.buildBusinessHoursFromAvailabilities(values[0] ? values[0] : []),
-                    disabledDays: this.buildDisableDaysFromLeaveRequests(values[1] ? values[1] : []),
+                    businessHours: this.buildBusinessHoursFromAvailabilities(availabilities || []),
+                    disabledDays: this.buildDisableDaysFromLeaveRequests(acceptedLeaveRequests || []),
                 }))
             } else {
                 notification.error({

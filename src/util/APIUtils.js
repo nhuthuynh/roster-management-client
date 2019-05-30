@@ -216,3 +216,10 @@ export function loadEmployeeApprovedLeaveRequests(employeeId) {
         method: 'GET'
     })
 }
+
+export function loadAvailabilitiesByEffectiveDateAndEmployeeId(effectiveDate, employeeId) {
+    return request({
+        url: `${API_BASE_URL}/availability/load/effectiveDate/{effectiveDate}/employee/{employeeId}`,
+        method: 'GET'
+    })
+}

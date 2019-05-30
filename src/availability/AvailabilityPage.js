@@ -5,12 +5,17 @@ import { notification, Button } from 'antd'
 import AvailabilityDay from './AvailabilityDay'
 import './availability.css'
 import { REG_TIME_FORMAT } from '../constants'
-import { formatNumberWithLeadingZero, isValidTime, copyArray } from '../util/helper'
+import { formatNumberWithLeadingZero, isValidTime, copyArray, getShopOwnerId } from '../util/helper'
+import { DATE_MOMENT_FORMART } from '../constants'
+import moment from 'moment'
+
+moment.utc()
 
 export default class AvailabilityPage extends Component {
     state = {
         availabilityList: [],
         originalAvailabilityList: [],
+        pendinAvailabilityList: [],
         isLoading: true,
         mode: "view"
     }
@@ -18,18 +23,28 @@ export default class AvailabilityPage extends Component {
     loadData = () => {
         const { currentUser } = this.props
 
-        loadAvailabilities(currentUser.id).then((response) => {
+        loadAvailabilities(currentUser.id).then((availabilities) => {
+            const latestDate = availabilities.reduce((date, avai) => { 
+                if (date.isBefore(moment(avai.effectiveDate, DATE_MOMENT_FORMART)))
+                    return moment(avai.effectiveDate)
+                return date
+            }, moment())
+            
+            let availabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSameOrBefore(latestDate))
+            let pendingAvailabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isAfter(latestDate))
+            
             this.setState((prevState) => {
                 return {
                     ...prevState,
-                    availabilityList: response,
-                    originalAvailabilityList: copyArray(response),
+                    availabilityList,
+                    originalAvailabilityList: copyArray(availabilityList),
+                    pendingAvailabilityList,
                     isLoading: false
                 }
             })    
         }).catch((error) => {
             notification.error({
-                message: "CEMS",
+                message: "CEMS - Availabilities",
                 description: "Failed to load availabilities!"
             })
         })
@@ -40,14 +55,12 @@ export default class AvailabilityPage extends Component {
         const { currentUser } = this.props
 
         if (this.validateAvalabilities(availabilityList)) {
-            saveAvailabilities({availabilityList, employeeId: currentUser.id }).then((response) => {
-                this.setState((prevState) => {
-                    return {
-                        ...prevState,
-                        originalAvailabilityList: copyArray(availabilityList),
-                        mode: "view"
-                    }
-                })
+            saveAvailabilities({availabilityList, employeeId: currentUser.id, shopOwerId: getShopOwnerId(currentUser) }).then((response) => {
+                this.setState((prevState) => ({
+                    ...prevState,
+                    originalAvailabilityList: copyArray(availabilityList),
+                    mode: "view"
+                }))
                 notification.success({
                     message: "CEMS",
                     description: "Update availabilities successfully!"
@@ -116,10 +129,10 @@ export default class AvailabilityPage extends Component {
         
         if (isValidTime(value, REG_TIME_FORMAT)) {
             this.setState((prevState) => {
-                let { availabilityList } = prevState
-                let timeValues = value.split(":")
-                availabilityList[index][prefixTime+"Hour"] = parseInt(timeValues[0], 10)
-                availabilityList[index][prefixTime+"Minute"] = parseInt(timeValues[1], 10)
+                const { availabilityList } = prevState
+                const [hour, minute] = value.split(":")
+                availabilityList[index][prefixTime+"Hour"] = parseInt(hour, 10)
+                availabilityList[index][prefixTime+"Minute"] = parseInt(minute, 10)
                 return {
                     ...prevState,
                     availabilityList
