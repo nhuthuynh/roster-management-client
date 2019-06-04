@@ -13,12 +13,13 @@ class RosterOfEmployee extends Component {
         this.state = {
             events: [],
             isLoading: false,
+            currentDate: moment(),
             roster: {
-                fromDate: new Date(),
-                toDate: new Date(),
-                createDate: new Date()
+                fromDate: moment(),
+                toDate: moment(),
+                createDate: moment()
             },
-            shiftList: {}
+            shiftList: {},
         }
     }
 
@@ -31,12 +32,12 @@ class RosterOfEmployee extends Component {
             ...prevState,
             isLoading: true
         }))
-        let dates = getFirstAndLastDayOfWeek(new Date(), false)
+        let rosterDate = this.getRosterDates()
         
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((roster)=> {
+        loadRoster(rosterDate.fromDate, rosterDate.toDate, shopOwnerId).then((roster)=> {
             this.setState((prevState) => ({
                 ...prevState,
                 roster,
@@ -51,6 +52,15 @@ class RosterOfEmployee extends Component {
         })
     }
 
+    getRosterDates (date) {
+        if (!date) date = new Date()
+        const { firstDate, lastDate } = getFirstAndLastDayOfWeek(date, false)
+        return {
+            fromDate: getDate(firstDate),
+            toDate: getDate(lastDate)
+        }
+    }
+
     convertStringToDateInShiftList = (shiftList) => {
         return shiftList.map((shift, index) => ({
             ...shift,
@@ -61,15 +71,17 @@ class RosterOfEmployee extends Component {
     }
 
     onNavigate = (date, view) => {
-        this.setState((prevState) => ({
-            isLoading: true
-        }))
-        let firstAndLastDate = getFirstAndLastDayOfWeek(date, false)
-        
+        let rosterDates = this.getRosterDates(date)
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        loadRoster(getDate(firstAndLastDate.firstDate), getDate(firstAndLastDate.lastDate), shopOwnerId).then((roster) => {
+        this.setState((prevState) => ({
+            ...prevState,
+            currentDate: date,
+            isLoading: true
+        }))
+
+        loadRoster(rosterDates.fromDate, rosterDates.toDate, shopOwnerId).then((roster) => {
             this.setState((prevState) => ({
                 ...prevState,
                 roster,
@@ -78,7 +90,7 @@ class RosterOfEmployee extends Component {
             }))
         }).catch((error) => {
             notification.error({
-                message: 'Roster',
+                message: 'CEMS - Roster',
                 description: error,
                 duration: 2
             });
