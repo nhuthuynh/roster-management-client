@@ -1,13 +1,15 @@
 import React, { Component } from 'react'
 
-import { loadAvailabilities, saveAvailabilities } from '../util/APIUtils'
-import { notification, Button } from 'antd'
-import AvailabilityDay from './AvailabilityDay'
-import './availability.css'
-import { REG_TIME_FORMAT } from '../constants'
-import { formatNumberWithLeadingZero, isValidTime, copyArray, getShopOwnerId } from '../util/helper'
-import { DATE_MOMENT_FORMART } from '../constants'
+import { loadAvailabilities, saveAvailabilities, loadRosterByTodayAndShopOwnerId } from '../util/APIUtils'
+import { notification, Row, Col } from 'antd'
+import { formatNumberWithLeadingZero, getShopOwnerId, copyArray, isValidTime } from '../util/helper'
+import { DATE_MOMENT_FORMART, REG_TIME_FORMAT } from '../constants'
+import AvailabilityGroup from './AvailabilityGroup'
+import AvailabilityNotification from './AvailabilityNotification'
+
 import moment from 'moment'
+
+import './availability.css'
 
 moment.utc()
 
@@ -15,30 +17,47 @@ export default class AvailabilityPage extends Component {
     state = {
         availabilityList: [],
         originalAvailabilityList: [],
-        pendinAvailabilityList: [],
+        //pendingAvailabilityList: [],
+        latestRoster: {},
         isLoading: true,
         mode: "view"
     }
 
     loadData = () => {
         const { currentUser } = this.props
-
-        loadAvailabilities(currentUser.id).then((availabilities) => {
+        const shopOwnerId = getShopOwnerId(currentUser)
+        Promise.all([loadAvailabilities(currentUser.id), loadRosterByTodayAndShopOwnerId(shopOwnerId)]).then(([availabilities, roster]) => {
             const latestDate = availabilities.reduce((date, avai) => { 
-                if (date.isBefore(moment(avai.effectiveDate, DATE_MOMENT_FORMART)))
-                    return moment(avai.effectiveDate)
+                if (moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSameOrAfter(date))
+                    return moment(avai.effectiveDate, DATE_MOMENT_FORMART)
                 return date
-            }, moment())
+            }, moment(new Date(), DATE_MOMENT_FORMART))
             
-            let availabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSameOrBefore(latestDate))
-            let pendingAvailabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isAfter(latestDate))
-            
+            let latestRoster = {}
+            if (roster.id) {
+                const { id, fromDate, toDate } = roster
+                latestRoster = {
+                    id,
+                    fromDate,
+                    toDate
+                }
+            }
+            //let availabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSameOrBefore(latestDate))
+            //let pendingAvailabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isAfter(latestDate))
+
+            //if (pendingAvailabilityList.length > 0) {
+                //availabilityList = pendingAvailabilityList // show only latest one
+            //}
+
+            let availabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSame(latestDate))
+
             this.setState((prevState) => {
                 return {
                     ...prevState,
                     availabilityList,
                     originalAvailabilityList: copyArray(availabilityList),
-                    pendingAvailabilityList,
+                    latestRoster,
+                    //pendingAvailabilityList,
                     isLoading: false
                 }
             })    
@@ -50,12 +69,20 @@ export default class AvailabilityPage extends Component {
         })
     }
 
-    saveAvailabilities = () => {
-        const { availabilityList } = this.state
-        const { currentUser } = this.props
+    getEffectiveDate = (latestRoster, effectiveDate) => {
+        if (latestRoster && latestRoster.toDate && moment(latestRoster.toDate, DATE_MOMENT_FORMART).isSameOrAfter(moment(effectiveDate, DATE_MOMENT_FORMART))) {
+            return latestRoster.toDate
+        } else {
+            return effectiveDate
+        }
+    }
 
+    saveAvailabilities = () => {
+        let { availabilityList, latestRoster } = this.state
+        const { currentUser } = this.props
+        availabilityList = availabilityList.map((el) => ({ ...el, effectiveDate: this.getEffectiveDate(latestRoster, el.effectiveDate)}))
         if (this.validateAvalabilities(availabilityList)) {
-            saveAvailabilities({availabilityList, employeeId: currentUser.id, shopOwerId: getShopOwnerId(currentUser) }).then((response) => {
+            saveAvailabilities({availabilityList, employeeId: currentUser.id, shopOwnerId: getShopOwnerId(currentUser) }).then((response) => {
                 this.setState((prevState) => ({
                     ...prevState,
                     originalAvailabilityList: copyArray(availabilityList),
@@ -79,10 +106,10 @@ export default class AvailabilityPage extends Component {
         }
     }
 
-    validateAvalabilities = (availabilityList) => {
-        for (let avaiIndex = 0, avaiLens = availabilityList.length; avaiIndex < avaiLens; avaiIndex++) {
-            let startTime = formatNumberWithLeadingZero(availabilityList[avaiIndex].startHour, availabilityList[avaiIndex].startMinute)
-            let endTime = formatNumberWithLeadingZero(availabilityList[avaiIndex].endHour, availabilityList[avaiIndex].endMinute)
+    validateAvalabilities = (avais) => {
+        for (let avaiIndex = 0, avaiLens = avais.length; avaiIndex < avaiLens; avaiIndex++) {
+            let startTime = formatNumberWithLeadingZero(avais[avaiIndex].startHour, avais[avaiIndex].startMinute)
+            let endTime = formatNumberWithLeadingZero(avais[avaiIndex].endHour, avais[avaiIndex].endMinute)
             if (!isValidTime(startTime, REG_TIME_FORMAT) || !isValidTime(endTime, REG_TIME_FORMAT)) { 
                     return false
             }
@@ -155,39 +182,7 @@ export default class AvailabilityPage extends Component {
         }
     }
 
-    renderAvailabilityDays = () => {
-        return this.state.availabilityList &&  this.state.availabilityList.length === 0 ? 
-        null 
-        : 
-        this.state.availabilityList
-            .map(this.mapEachAvalabilityDay)
-    }
-
-    mapEachAvalabilityDay = (el, index) => {
-
-        const { mode } = this.state
-        const { available, day, startHour, startMinute, endHour, endMinute } = el
-        let startTime = "", endTime= ""
-        if (!available && mode === "view") {
-            startTime = "N/A"
-            endTime = "N/A"
-        } else {
-            startTime = formatNumberWithLeadingZero(startHour, startMinute)
-            endTime = formatNumberWithLeadingZero(endHour, endMinute)
-        }
-
-        return <AvailabilityDay key={index} startTime={startTime} endTime={endTime} day={day} index={index} 
-            startTimeTooltipValue={"Enter start time in HH:mm format"}
-            endTimeTooltipValue={"Enter end time in HH:mm format"}
-            mode={mode}
-            available={available}
-            onCheckBoxChange={this.changeAvailability} 
-            onInputChange={this.onInputChange} 
-            onInputBlur={this.onInputBlur}
-             />
-    }
-
-    changeAvailability = (index) => {
+    onChangeAvailability = (index) => {
         this.setState((prevState) => {
             let { availabilityList } = prevState
             let { available } = availabilityList[index]
@@ -200,31 +195,33 @@ export default class AvailabilityPage extends Component {
     }
 
     render () {
-        const { cancelEditMode, switchEditMode, saveAvailabilities, renderAvailabilityDays } = this
-        const { mode } = this.state
+        const { cancelEditMode, switchEditMode, saveAvailabilities, onInputBlur, onInputChange, onChangeAvailability } = this
+        const { mode, latestRoster, availabilityList } = this.state
         
         return (
             <div className="availability-container">
                 <h1 className="page-title">my availability</h1>
                 <div className="page-body">
-                    {renderAvailabilityDays()}
-                    {
-                        mode === "view" ? <Button className="btn-first" onClick={switchEditMode} type="primary">Edit</Button> : null
-                    }
-                    {
-                        mode !== "view" ? <Button onClick={cancelEditMode}>Cancel</Button> : null
-                    }
-                    {
-                        mode !== "view" ? <Button className="btn-first" onClick={saveAvailabilities} type="primary">Save</Button> : null
-                    }
-                </div>
-                <div>
-                    <p></p>
-                    <p><u><b>Note</b></u>:</p>
-                    <p>Any changes to your availability will not affect currently existing roster. It will only be effective the week after the last created roster.</p>
-                    <p>For any temporary or urgent changes, please contact your supervisor.</p>
-                    <p>Please enter a maximum of 23:59 for end time.</p>
-                    <p>If the times are left as default (from 00:00 to 00:00), you will be considered available all day.</p>
+                    <Row>
+                        <Col span={12}>
+                            <AvailabilityGroup mode={mode} data={availabilityList} 
+                                onCancelEditMode={cancelEditMode} 
+                                onSwitchEditMode={switchEditMode}
+                                onSave={saveAvailabilities}
+                                onInputBlur={onInputBlur}
+                                onInputChange={onInputChange}
+                                onChangeAvailability={onChangeAvailability}
+                            />
+                        </Col>
+                        <Col span={12}>
+                            <p><u><b>Note</b></u>:</p>
+                            <AvailabilityNotification data={latestRoster} />
+                            <p>Any changes to your availability will not affect currently existing roster. It will only be effective the week after the last created roster.</p>
+                            <p>For any temporary or urgent changes, please contact your supervisor.</p>
+                            <p>Please enter a maximum of 23:59 for end time.</p>
+                            <p>If the times are left as default (from 00:00 to 00:00), you will be considered available all day.</p>      
+                        </Col>
+                    </Row>
                 </div>
             </div>
         )
