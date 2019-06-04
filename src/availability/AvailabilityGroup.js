@@ -1,9 +1,9 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import AvailabilityDay from './AvailabilityDay'
 import { Button } from 'antd'
 import { formatNumberWithLeadingZero } from '../util/helper'
 
-export default class AvailabilityGroup extends PureComponent {
+export default class AvailabilityGroup extends Component {
 
     mapEachAvalabilityDay = (el, index) => {
 

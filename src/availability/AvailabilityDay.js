@@ -1,13 +1,13 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { Input, Checkbox, Tooltip } from 'antd'
 
-export default class AvailabilityDay extends PureComponent {
+export default class AvailabilityDay extends Component {
 
     render () {
         const { mode, onCheckBoxChange, index, onInputChange, onInputBlur, 
             startTimeTooltipValue, endTimeTooltipValue,
             startTime, endTime, available, day } = this.props
-
+            
         return (
             <div className="time-control-container">
                 <label className="time-control-item time-control-day">{ day }</label>
