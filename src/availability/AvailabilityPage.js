@@ -17,7 +17,6 @@ export default class AvailabilityPage extends Component {
     state = {
         availabilityList: [],
         originalAvailabilityList: [],
-        //pendingAvailabilityList: [],
         latestRoster: {},
         isLoading: true,
         mode: "view"
@@ -42,14 +41,8 @@ export default class AvailabilityPage extends Component {
                     toDate
                 }
             }
-            //let availabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSameOrBefore(latestDate))
-            //let pendingAvailabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isAfter(latestDate))
-
-            //if (pendingAvailabilityList.length > 0) {
-                //availabilityList = pendingAvailabilityList // show only latest one
-            //}
-
-            let availabilityList = availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSame(latestDate))
+            
+            let availabilityList = availabilities.length > 7 ? availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSame(latestDate, 'date')) : availabilities
 
             this.setState((prevState) => {
                 return {
@@ -57,7 +50,6 @@ export default class AvailabilityPage extends Component {
                     availabilityList,
                     originalAvailabilityList: copyArray(availabilityList),
                     latestRoster,
-                    //pendingAvailabilityList,
                     isLoading: false
                 }
             })    
