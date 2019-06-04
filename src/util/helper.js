@@ -3,7 +3,9 @@ import moment from 'moment'
 export function getDate(theDate) {
     let date = new Date();
     date.setTime(theDate);
-    return `${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()}`;
+    let newDate = date.getDate() > 9 ? date.getDate() : `0${date.getDate()}` 
+    let newMonth = date.getMonth()+1 > 9 ? date.getMonth()+1 : `0${date.getMonth()+1}`
+    return `${newDate}-${newMonth}-${date.getFullYear()}`;
 }
 
 export function getHoursAndMinuteOfDate(theDate) {
