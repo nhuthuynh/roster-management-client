@@ -216,3 +216,17 @@ export function loadEmployeeApprovedLeaveRequests(employeeId) {
         method: 'GET'
     })
 }
+
+export function loadAvailabilitiesByRosterDatesAndEmployeeId(toDate, employeeId) {
+    return request({
+        url: `${API_BASE_URL}/availability/load/toDate/${toDate}/employee/${employeeId}`,
+        method: 'GET'
+    })
+}
+
+export function loadRosterByTodayAndShopOwnerId(shopOwnerId) {
+    return request({
+        url: `${API_BASE_URL}/roster/shopOwner/${shopOwnerId}/latest`,
+        method: 'GET'
+    })
+}

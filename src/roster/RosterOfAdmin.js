@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadAvailabilities, loadWorkingEmployees } from '../util/APIUtils';
+import { loadRoster, createRoster, loadEmployeeApprovedLeaveRequests, loadWorkingEmployees, loadAvailabilitiesByRosterDatesAndEmployeeId } from '../util/APIUtils';
 import { getDate, getFirstAndLastDayOfWeek } from '../util/helper';
 import { Button, notification, Popconfirm } from 'antd'
 import BigCalendar from '@nhuthuynh/react-big-calendar'
@@ -10,6 +10,7 @@ import { DAYS_IN_WEEK_IN_VALUES } from '../constants'
 import EmployeeSelection from '../common/EmployeesSelection'
 
 moment.utc()
+
 class RosterOfAdmin extends Component {
     constructor() {
         super()
@@ -20,10 +21,11 @@ class RosterOfAdmin extends Component {
             isEmployeeSelectable: false,
             isCalendarClickable: false,
             selectedEmployeeId: 0,
+            currentDate: moment(),
             roster: {
-                fromDate: new Date(),
-                toDate: new Date(),
-                createDate: new Date()
+                fromDate: moment(),
+                toDate: moment(),
+                createDate: moment()
             },
             shiftList: {},
             businessHours: [],
@@ -36,15 +38,16 @@ class RosterOfAdmin extends Component {
     }
 
     loadData = () => {
-        this.setState({
+        this.setState((prevState) => ({
+            ...prevState,
             isLoading: true
-        });
-        let dates = getFirstAndLastDayOfWeek(new Date(), false);
+        }))
+        let rosterDate = this.getRosterDates()
         
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        Promise.all([loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId), loadWorkingEmployees(shopOwnerId)]).then(([roster, employees])=> {
+        Promise.all([loadRoster(rosterDate.fromDate, rosterDate.toDate, shopOwnerId), loadWorkingEmployees(shopOwnerId)]).then(([roster, employees])=> {
                 this.setState((prevState) => ({
                 ...prevState,
                 roster,
@@ -60,19 +63,22 @@ class RosterOfAdmin extends Component {
         });
     }
 
+    getRosterDates (date) {
+        if (!date) date = new Date()
+        const { firstDate, lastDate } = getFirstAndLastDayOfWeek(date, false)
+        return {
+            fromDate: getDate(firstDate),
+            toDate: getDate(lastDate)
+        }
+    }
+
     convertStringToDateInShiftList (shiftList) {
-        return shiftList && shiftList.length > 0 && shiftList.map((shift, index) => ({
+        return shiftList.map((shift, index) => ({
             ...shift,
             start: new Date(shift.start),
             end: new Date(shift.end),
             index
-        })) || []
-    }
-
-    checkWhetherSelectedEventIsOvelapped (selectedEvent, events) {
-        if (!selectedEvent || !events) return 
-
-        
+        }))
     }
 
     timeSelect = ({ start, end }) => {
@@ -101,8 +107,8 @@ class RosterOfAdmin extends Component {
     }
 
     saveRoster = () => {
-        let { roster, events } = this.state;
-        let firstAndLastDateOfWeek = getFirstAndLastDayOfWeek(new Date(), false)
+        let { roster, events, currentDate } = this.state;
+        let rosterDates = this.getRosterDates(currentDate)
         let shiftList = {}
         const shopOwnerId = getShopOwnerId(this.props.currentUser)
 
@@ -130,8 +136,8 @@ class RosterOfAdmin extends Component {
         })
 
         roster.shopOwnerId = shopOwnerId
-        roster.fromDate = getDate(firstAndLastDateOfWeek.firstDate)
-        roster.toDate = getDate(firstAndLastDateOfWeek.lastDate)
+        roster.fromDate = rosterDates.fromDate
+        roster.toDate = rosterDates.toDate
         roster.createdDate = getDate(new Date())
         
         this.setState((prevState) => ({
@@ -167,31 +173,41 @@ class RosterOfAdmin extends Component {
     }
 
     onNavigate = (date, view) => {
-        let firstAndLastDate = getFirstAndLastDayOfWeek(date, false)
+        let rosterDates = this.getRosterDates(date)
         const shopOwnerId = getShopOwnerId(this.props.currentUser)
+        
+        this.onChangeEmployee(0)
         this.setState((prevState) => ({
             ...prevState,
+            currentDate: date,
             isLoading: true
         }))
 
-        loadRoster(getDate(firstAndLastDate.firstDate), getDate(firstAndLastDate.lastDate), shopOwnerId).then((roster) => {
-            this.setState((prevState) => ({
-                ...prevState,
-                roster: roster ? roster : {},
-                events: this.convertStringToDateInShiftList(roster.shiftList),
-                isLoading: false
-            }))
+        loadRoster(rosterDates.fromDate, rosterDates.toDate, shopOwnerId)
+            .then((roster) => {
+                this.setState((prevState) => ({
+                    ...prevState,
+                    roster: roster ? roster : {},
+                    events: this.convertStringToDateInShiftList(roster.shiftList),
+                    isLoading: false
+                }))
         }).catch((error) => {
             notification.error({
-                message: 'Roster',
+                message: 'CEMS - Roster',
                 description: error,
                 duration: 2
-            });
-        });
+            })
+
+            this.setState((prevState) => ({
+                ...prevState,
+                isLoading: false
+            }))
+        })
     }
 
     resetCalendar = () => this.setState((prevState) => ({
         ...prevState,
+        selectedEmployeeId: 0,
         isLoading: false,
         isCalendarClickable: false,
         businessHours: [],
@@ -206,51 +222,54 @@ class RosterOfAdmin extends Component {
             return
         }
 
+        const { currentDate: date } = this.state
+        const rosterDates = this.getRosterDates(date)
+        
         this.setState((prevState) => ({
             ...prevState,
             isLoading: true
         }))
-        Promise.all([loadAvailabilities(employeeId), loadEmployeeApprovedLeaveRequests(employeeId)]).then((values) => {
-            if (values && values[0] && values[1]) {
-                this.setState((prevState) => ({
-                    ...prevState,
-                    isLoading: false,
-                    isCalendarClickable: true,
-                    selectedEmployeeId: employeeId,
-                    businessHours: this.buildBusinessHoursFromAvailabilities(values[0] ? values[0] : []),
-                    disabledDays: this.buildDisableDaysFromLeaveRequests(values[1] ? values[1] : []),
-                }))
-            } else {
-                notification.error({
-                    message: 'CEMS - Roster Management',
-                    description: 'There is an error!'
-                })
-            }
+        
+        this.loadAvailabilitiesAndLeaveRequest(rosterDates.toDate, employeeId).then(([availabilities, acceptedLeaveRequests]) => {
+            this.setState((prevState) => ({
+                ...prevState,
+                isLoading: false,
+                isCalendarClickable: true,
+                selectedEmployeeId: employeeId,
+                businessHours: this.buildBusinessHoursFromAvailabilities(availabilities || []),
+                disabledDays: this.buildDisableDaysFromLeaveRequests(acceptedLeaveRequests || []),
+            }))
         }).catch((error) => notification.error({
             message: 'CEMS - Roster Management',
             description: `Error: ${(error && error.message)}`
         }))
     }
+
+    loadAvailabilitiesAndLeaveRequest = (toDate, employeeId) => {
+        return Promise.all([loadAvailabilitiesByRosterDatesAndEmployeeId(toDate, employeeId), loadEmployeeApprovedLeaveRequests(employeeId)])
+    }
     validateEachAvailabilityDay = (businessHours, availability) => {
         let { available, day, endHour, endMinute, startHour, startMinute } = availability
-        
-        if (!available || 
-            (startHour === endHour && startMinute === endMinute && startHour !== 0 && startMinute !== 0) || (
-                startHour > endHour) || 
-                (startHour === endHour && startMinute > endMinute)) 
-                return businessHours
-        
-        if (startHour === 0 && startMinute === 0 && endHour === 0 && endMinute === 0) {
+        endHour = endHour === 0 ? 23 : endHour
+        endMinute = endMinute === 0 ? 59 : endMinute
+        if (available) {
+            if (
+                (startHour === endHour && startMinute === endMinute) || 
+                (startHour === endHour && startMinute > endMinute)) {
+                    return businessHours
+                }
+                    
+        } else {
             endHour = 23
             endMinute = 59
         }
+        
 
-        if (Array.isArray(businessHours)) 
-            businessHours.push({
-                dow: [DAYS_IN_WEEK_IN_VALUES[day.toLowerCase()]],
-                start: `${startHour}:${startMinute}`,
-                end: `${endHour}:${endMinute}`
-            })
+        businessHours.push({
+            dow: [DAYS_IN_WEEK_IN_VALUES[day.toLowerCase()]],
+            start: `${startHour}:${startMinute}`,
+            end: `${endHour}:${endMinute}`
+        })
 
         return businessHours
     }

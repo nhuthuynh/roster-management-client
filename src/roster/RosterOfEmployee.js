@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { loadRoster } from '../util/APIUtils';
-import { getDate, switchPositionBetweenDayAndMonth, getFirstAndLastDayOfWeek } from '../util/helper';
+import { getDate, getFirstAndLastDayOfWeek } from '../util/helper';
 import { notification } from 'antd';
 import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
@@ -13,12 +13,13 @@ class RosterOfEmployee extends Component {
         this.state = {
             events: [],
             isLoading: false,
+            currentDate: moment(),
             roster: {
-                fromDate: new Date(),
-                toDate: new Date(),
-                createDate: new Date()
+                fromDate: moment(),
+                toDate: moment(),
+                createDate: moment()
             },
-            shiftList: {}
+            shiftList: {},
         }
     }
 
@@ -31,19 +32,18 @@ class RosterOfEmployee extends Component {
             ...prevState,
             isLoading: true
         }))
-        let dates = getFirstAndLastDayOfWeek(new Date(), false)
+        let rosterDate = this.getRosterDates()
         
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
 
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((value)=> {
-            if (value)
-                this.setState((prevState) => ({
-                    ...prevState,
-                    roster: value,
-                    events: value["shiftList"] ? this.convertStringToDateInShiftList(value["shiftList"]) : [],
-                    isLoading: false
-                }))
+        loadRoster(rosterDate.fromDate, rosterDate.toDate, shopOwnerId).then((roster)=> {
+            this.setState((prevState) => ({
+                ...prevState,
+                roster,
+                events: this.convertStringToDateInShiftList(roster.shiftList),
+                isLoading: false
+            })) 
         }).catch((error) => {
             notification.error({
                 message: 'CEMS',
@@ -52,34 +52,45 @@ class RosterOfEmployee extends Component {
         })
     }
 
-    convertStringToDateInShiftList = (shiftList) => {
-        if (!shiftList) return;
+    getRosterDates (date) {
+        if (!date) date = new Date()
+        const { firstDate, lastDate } = getFirstAndLastDayOfWeek(date, false)
+        return {
+            fromDate: getDate(firstDate),
+            toDate: getDate(lastDate)
+        }
+    }
 
-        return shiftList.map((el) => {
-            return {
-                ...el,
-                start: new Date(switchPositionBetweenDayAndMonth(el.start)),
-                end: new Date(switchPositionBetweenDayAndMonth(el.end))
-            }
-        });
+    convertStringToDateInShiftList = (shiftList) => {
+        return shiftList.map((shift, index) => ({
+            ...shift,
+            start: new Date(shift.start),
+            end: new Date(shift.end),
+            index
+        }))
     }
 
     onNavigate = (date, view) => {
-        let dates = getFirstAndLastDayOfWeek(date, false);
-        this.setState({
-            isLoading: true
-        })
+        let rosterDates = this.getRosterDates(date)
         const { currentUser } = this.props
-        const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
-        loadRoster(getDate(dates.firstDate), getDate(dates.lastDate), shopOwnerId).then((roster) => {
-            this.setState({
-                roster: roster ? roster : {},
-                events: roster.shiftList ? this.convertStringToDateInShiftList(roster.shiftList) : [],
+        const shopOwnerId = getShopOwnerId(currentUser)
+
+        this.setState((prevState) => ({
+            ...prevState,
+            currentDate: date,
+            isLoading: true
+        }))
+
+        loadRoster(rosterDates.fromDate, rosterDates.toDate, shopOwnerId).then((roster) => {
+            this.setState((prevState) => ({
+                ...prevState,
+                roster,
+                events: this.convertStringToDateInShiftList(roster.shiftList),
                 isLoading: false
-            })
+            }))
         }).catch((error) => {
             notification.error({
-                message: 'Roster',
+                message: 'CEMS - Roster',
                 description: error,
                 duration: 2
             });
