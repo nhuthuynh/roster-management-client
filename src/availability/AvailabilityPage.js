@@ -25,40 +25,29 @@ export default class AvailabilityPage extends Component {
     loadData = () => {
         const { currentUser } = this.props
         const shopOwnerId = getShopOwnerId(currentUser)
-        Promise.all([loadAvailabilities(currentUser.id), loadRosterByTodayAndShopOwnerId(shopOwnerId)]).then(([availabilities, roster]) => {
-            const latestDate = availabilities.reduce((date, avai) => { 
-                if (moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSameOrAfter(date))
-                    return moment(avai.effectiveDate, DATE_MOMENT_FORMART)
-                return date
-            }, moment(new Date(), DATE_MOMENT_FORMART))
-            
-            let latestRoster = {}
-            if (roster.id) {
-                const { id, fromDate, toDate } = roster
-                latestRoster = {
-                    id,
-                    fromDate,
-                    toDate
-                }
-            }
-            
-            let availabilityList = availabilities.length > 7 ? availabilities.filter((avai) => moment(avai.effectiveDate, DATE_MOMENT_FORMART).isSame(latestDate, 'date')) : availabilities
-
-            this.setState((prevState) => {
-                return {
+        this.setLoading(true)
+        Promise.all([loadAvailabilities(currentUser.id), loadRosterByTodayAndShopOwnerId(shopOwnerId)]).then(([availabilities, latestRoster]) => {
+            this.setState(prevState => ({
                     ...prevState,
-                    availabilityList,
-                    originalAvailabilityList: copyArray(availabilityList),
-                    latestRoster,
+                    availabilityList: availabilities,
+                    originalAvailabilityList: copyArray(availabilities),
+                    latestRoster: latestRoster,
                     isLoading: false
-                }
-            })    
+                }))    
         }).catch((error) => {
             notification.error({
                 message: "CEMS - Availabilities",
-                description: "Failed to load availabilities!"
+                description: `Error: ${error && error.message}`
             })
+            this.setLoading(false)
         })
+    }
+
+    setLoading = (value) => {
+        this.setState(prevState => ({
+            ...prevState,
+            isLoading: value   
+        }))
     }
 
     getEffectiveDate = (latestRoster, effectiveDate) => {
@@ -70,6 +59,7 @@ export default class AvailabilityPage extends Component {
     }
 
     saveAvailabilities = () => {
+        this.setLoading(true)
         let { availabilityList, latestRoster } = this.state
         const { currentUser } = this.props
         availabilityList = availabilityList.map((el) => ({ ...el, effectiveDate: this.getEffectiveDate(latestRoster, el.effectiveDate)}))
@@ -78,23 +68,26 @@ export default class AvailabilityPage extends Component {
                 this.setState((prevState) => ({
                     ...prevState,
                     originalAvailabilityList: copyArray(availabilityList),
-                    mode: "view"
+                    mode: "view",
+                    isLoading: false
                 }))
                 notification.success({
-                    message: "CEMS",
+                    message: "CEMS - Availability",
                     description: "Update availabilities successfully!"
                 })
             }).catch((error) => {
                 notification.error({
-                    message: "CEMS",
-                    description: `${error}`
+                    message: "CEMS - Availability",
+                    description: `Error: ${error && error.message}`
                 })
+                this.setLoading(false)
             })
         } else {
             notification.error({
                 message: "CEMS",
                 description: "Please enter a number in format HH:mm"
             })
+            this.setLoading(false)   
         }
     }
 

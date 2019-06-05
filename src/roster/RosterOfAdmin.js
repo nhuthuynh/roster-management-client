@@ -21,11 +21,11 @@ class RosterOfAdmin extends Component {
             isEmployeeSelectable: false,
             isCalendarClickable: false,
             selectedEmployeeId: 0,
-            currentDate: moment(),
+            currentDate: moment().utc(),
             roster: {
-                fromDate: moment(),
-                toDate: moment(),
-                createDate: moment()
+                fromDate: moment().utc(),
+                toDate: moment().utc(),
+                createDate: moment().utc()
             },
             shiftList: {},
             businessHours: [],
@@ -64,7 +64,7 @@ class RosterOfAdmin extends Component {
     }
 
     getRosterDates (date) {
-        if (!date) date = new Date()
+        if (!date) date = moment().utc()
         const { firstDate, lastDate } = getFirstAndLastDayOfWeek(date, false)
         return {
             fromDate: getDate(firstDate),
@@ -258,13 +258,8 @@ class RosterOfAdmin extends Component {
                 (startHour === endHour && startMinute > endMinute)) {
                     return businessHours
                 }
-                    
-        } else {
-            endHour = 23
-            endMinute = 59
         }
         
-
         businessHours.push({
             dow: [DAYS_IN_WEEK_IN_VALUES[day.toLowerCase()]],
             start: `${startHour}:${startMinute}`,
