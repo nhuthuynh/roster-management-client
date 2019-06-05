@@ -90,7 +90,7 @@ export function resignEmployees(resignRequest) {
 
 export function loadAvailabilities(employeeId) {
     return request({
-        url: `${API_BASE_URL}/availability/load?employeeId=${employeeId}`,
+        url: `${API_BASE_URL}/availability/employee/${employeeId}`,
         method: 'GET'
     })
 }
@@ -219,7 +219,7 @@ export function loadEmployeeApprovedLeaveRequests(employeeId) {
 
 export function loadAvailabilitiesByRosterDatesAndEmployeeId(toDate, employeeId) {
     return request({
-        url: `${API_BASE_URL}/availability/load/toDate/${toDate}/employee/${employeeId}`,
+        url: `${API_BASE_URL}/availability/toDate/${toDate}/employee/${employeeId}`,
         method: 'GET'
     })
 }
