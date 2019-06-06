@@ -6,7 +6,7 @@ import BigCalendar from '@nhuthuynh/react-big-calendar'
 import moment from 'moment'
 import { getShopOwnerId } from '../util/helper'
 import dates from '../util/dates'
-import { DAYS_IN_WEEK_IN_VALUES } from '../constants'
+import { DAYS_IN_WEEK_IN_VALUES, DATE_MOMENT_FORMART } from '../constants'
 import EmployeeSelection from '../common/EmployeesSelection'
 
 moment.utc()
@@ -279,15 +279,13 @@ class RosterOfAdmin extends Component {
 
     validateEachLeaveRequests = (disabledDays, leaveRequest) => {
         let { fromDate, toDate } = leaveRequest
-        fromDate = getDate(fromDate)
-        toDate =  getDate(toDate)
+        fromDate = moment(fromDate, DATE_MOMENT_FORMART)
+        toDate =  moment(toDate, DATE_MOMENT_FORMART)
         let diff = dates.diff(fromDate, toDate, 'day')
         if (diff === 0) {
             disabledDays.push(fromDate)
         } else {
-            //disabledDays.push(fromDate)
             disabledDays = dates.range(fromDate, toDate)
-            //disabledDays.push(toDate)
         }
 
         return disabledDays
