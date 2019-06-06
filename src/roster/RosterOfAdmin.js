@@ -258,13 +258,13 @@ class RosterOfAdmin extends Component {
                 (startHour === endHour && startMinute > endMinute)) {
                     return businessHours
                 }
+
+            businessHours.push({
+                dow: [DAYS_IN_WEEK_IN_VALUES[day.toLowerCase()]],
+                start: `${startHour}:${startMinute}`,
+                end: `${endHour}:${endMinute}`
+            })
         }
-        
-        businessHours.push({
-            dow: [DAYS_IN_WEEK_IN_VALUES[day.toLowerCase()]],
-            start: `${startHour}:${startMinute}`,
-            end: `${endHour}:${endMinute}`
-        })
 
         return businessHours
     }
