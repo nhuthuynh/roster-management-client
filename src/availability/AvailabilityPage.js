@@ -181,7 +181,7 @@ export default class AvailabilityPage extends Component {
 
     render () {
         const { cancelEditMode, switchEditMode, saveAvailabilities, onInputBlur, onInputChange, onChangeAvailability } = this
-        const { mode, latestRoster, availabilityList } = this.state
+        const { mode, latestRoster, availabilityList, isLoading } = this.state
         
         return (
             <div className="availability-container">
@@ -196,6 +196,7 @@ export default class AvailabilityPage extends Component {
                                 onInputBlur={onInputBlur}
                                 onInputChange={onInputChange}
                                 onChangeAvailability={onChangeAvailability}
+                                loading={isLoading}
                             />
                         </Col>
                         <Col span={12}>

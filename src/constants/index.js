@@ -1,5 +1,8 @@
 //export const API_BASE_URL = 'https://cafe-employee-management.herokuapp.com/api'
-export const API_BASE_URL = 'http://localhost:8080/api'
+//export const API_BASE_URL = 'http://localhost:8080/api'
+//export const API_BASE_URL = 'http://cems.ap-southeast-2.elasticbeanstalk.com/api'
+import config from '../config'
+export const API_BASE_URL = `${config.apiGateway.URL}/api`
 export const ACCESS_TOKEN = 'accessToken'
 
 export const EMPLOYEE_TYPES = {

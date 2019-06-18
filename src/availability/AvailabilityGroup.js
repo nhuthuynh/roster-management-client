@@ -37,7 +37,7 @@ export default class AvailabilityGroup extends Component {
     }
 
     render () {
-        const { mode, data, onCancelEditMode, onSave, onSwitchEditMode } = this.props
+        const { mode, data, onCancelEditMode, onSave, onSwitchEditMode, loading } = this.props
         const { renderAvailableDays } = this
         return (
             <div className="availability-group">
@@ -51,7 +51,7 @@ export default class AvailabilityGroup extends Component {
                 mode !== "view" ? <Button onClick={onCancelEditMode}>Cancel</Button> : null
             }
             {
-                mode !== "view" ? <Button className="btn-first" onClick={onSave} type="primary">Save</Button> : null
+                mode !== "view" ? <Button className="btn-first" onClick={onSave} type="primary" loading={loading}>Save</Button> : null
             }
             </div>
         )

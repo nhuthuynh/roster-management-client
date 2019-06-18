@@ -305,7 +305,7 @@ class RosterOfAdmin extends Component {
 
     render() {
         const { onChangeEmployee, timeSelect, onNavigate, saveRoster, onSelectEvent } = this
-        const { events, isCalendarClickable, businessHours, employees, selectedEmployeeId, disabledDays } = this.state
+        const { events, isCalendarClickable, businessHours, employees, selectedEmployeeId, disabledDays, isLoading } = this.state
         
         return (
             <div className="desc">
@@ -327,7 +327,7 @@ class RosterOfAdmin extends Component {
                         event: Event.bind(this)
                     }}
                     />
-                <Button className="btn-save-roster" type="primary" size="large" onClick={saveRoster}>Save roster</Button>
+                <Button className="btn-save-roster" type="primary" size="large" onClick={saveRoster} loading={isLoading}>Save roster</Button>
             </div>
         );
     }

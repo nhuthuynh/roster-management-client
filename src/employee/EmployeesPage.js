@@ -113,7 +113,10 @@ export default class EmployeesPage extends Component {
     addEmployee = (e) => {
         e.preventDefault()
         const form = this.formRef.props.form
-        
+        this.setState((prevState) => ({
+            ...prevState,
+            isLoading: true
+        }));
         form.validateFields((err, values) => {
           if (!err)  {
             const { loadEmployees, hideAddEmployeeModal } = this
@@ -175,7 +178,7 @@ export default class EmployeesPage extends Component {
     }
 
     render () {
-        const { employeesList, isShowModal, selectedRowKeys } = this.state
+        const { employeesList, isShowModal, selectedRowKeys, isLoading } = this.state
         const { saveFormRef, addEmployee, onSelectedRowKeysChange, showAddEmployeeModal, hideAddEmployeeModal, resignEmployees } = this
         const rowSelection = {
             selectedRowKeys,
@@ -193,7 +196,7 @@ export default class EmployeesPage extends Component {
                         })
                     }
                 />
-                <WrappedAddEmployeeModal wrappedComponentRef={saveFormRef} onCancel={hideAddEmployeeModal} visible={isShowModal} handleSubmit={addEmployee} />
+                <WrappedAddEmployeeModal wrappedComponentRef={saveFormRef} onCancel={hideAddEmployeeModal} visible={isShowModal} handleSubmit={addEmployee} loading={isLoading} />
             </div>
         )
     }
