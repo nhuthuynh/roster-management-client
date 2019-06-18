@@ -11,9 +11,13 @@
     "react-scripts": "1.1.5"
   },
   "scripts": {
-    "start": "react-app-rewired start",
+    "start": "REACT_APP_STAGE=dev react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test --env=jsdom",
+    
+    "predeploy:prod": "REACT_APP_STAGE=production npm run build",
+    "deploy:prod": "aws s3 sync build/ s3://cems-client",
+    "postdeploy:prod": "aws cloudfront create-invalidation --distribution-id E3AEMXU8TG8UVD --paths '/*' && aws cloudfront create-invalidation --distribution-id d1x9hfrgt0nh3b.cloudfront.net --paths '/*'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
