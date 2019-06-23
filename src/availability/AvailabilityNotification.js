@@ -5,7 +5,7 @@ export default function AvailabilityNotification(props) {
     return (
         <p>
             {
-                roster && roster.id ? <b>{ `A roster from ${roster.fromDate} to ${roster.toDate} is made. Your update will affected after ${roster.toDate}` }</b> : null
+                roster && roster.fromDate && roster.toDate ? <b>{ `A roster from ${roster.fromDate} to ${roster.toDate} is made. Your update will affected after ${roster.toDate}` }</b> : null
             }
         </p>
     )

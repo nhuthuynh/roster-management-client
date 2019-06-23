@@ -60,6 +60,10 @@ class RosterOfAdmin extends Component {
                 message: 'CEMS - Roster',
                 description: `${(error && error.message ? error.message : 'There some errors loading data!')}`
             });
+            this.setState(prevState => ({
+                ...prevState,
+                isLoading: false
+            }));
         });
     }
 

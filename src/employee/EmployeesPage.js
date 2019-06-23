@@ -50,15 +50,24 @@ export default class EmployeesPage extends Component {
         this.loadEmployees()
     }
 
+    setLoading (isLoading) {
+        this.setState((prevState) =>({
+            ...prevState,
+            isLoading
+        }))
+    }
+
     loadEmployees = () => {
         const { currentUser } = this.props
         const shopOwnerId = currentUser.shopOwnerId ? currentUser.shopOwnerId : currentUser.id
+        this.setLoading(true)
         loadEmployees(shopOwnerId).then((response) => {
-            this.setState((prevState, props) => {
+            this.setState((prevState) => {
                 return {
                     ...prevState,
                     employeesList: response,
-                    shopOwnerId
+                    shopOwnerId,
+                    isLoading: false
                 }
             })
         })
@@ -74,11 +83,12 @@ export default class EmployeesPage extends Component {
     }
 
     hideAddEmployeeModal = () => {
-        this.setState((prevState, props) => {
+        this.setState((prevState) => {
             this.resetForm()
             return {
                 ...prevState,
-                isShowModal: false
+                isShowModal: false,
+                isLoading: false
             }
         })
     }
@@ -113,10 +123,7 @@ export default class EmployeesPage extends Component {
     addEmployee = (e) => {
         e.preventDefault()
         const form = this.formRef.props.form
-        this.setState((prevState) => ({
-            ...prevState,
-            isLoading: true
-        }));
+        this.setLoading(true)
         form.validateFields((err, values) => {
           if (!err)  {
             const { loadEmployees, hideAddEmployeeModal } = this
@@ -136,6 +143,7 @@ export default class EmployeesPage extends Component {
                     message: 'CEMS',
                     description: 'Errors:' + error.message
                 })
+                this.setLoading(false)
               })
           }
         })

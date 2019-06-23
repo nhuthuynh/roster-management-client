@@ -54,7 +54,7 @@ export default class AvailabilityPage extends Component {
         if (latestRoster && latestRoster.toDate && moment(latestRoster.toDate, DATE_MOMENT_FORMART).isSameOrAfter(moment(effectiveDate, DATE_MOMENT_FORMART))) {
             return latestRoster.toDate
         } else {
-            return effectiveDate
+            return moment(effectiveDate, DATE_MOMENT_FORMART).isSameOrAfter(moment().utc()) ? effectiveDate : moment(new Date(), DATE_MOMENT_FORMART)
         }
     }
 
