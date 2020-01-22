@@ -3,36 +3,51 @@ import {
     Link,
     withRouter
 } from 'react-router-dom';
-import './AppHeader.css';
-import { Layout, Menu, Icon } from 'antd';
+
+import { Layout, Menu } from 'antd'
+import ProfileArea from './ProfileArea'
+import { ROUTES, EMPLOYEE_ROLES } from '../constants'
+
 const Header = Layout.Header;
 
 class AppHeader extends Component {
-    render() {
-        let menuItems = [
-            <Menu.Item key="/">
-                <Link to="/">
-                    <Icon type="home" className="nav-icon" />
-                </Link>
-            </Menu.Item>,
-            <Menu.Item key="/roster">
-                <Link to="/roster/">
-                    <span>Roster</span>
-                </Link>
-            </Menu.Item>,
-        ];
+    state = {
+        isShowProfileMenu: false
+    }
 
+    render() {
+        const { currentUser, onSignOut, isAuthenticated, showSignUpModal, showSignInModal } = this.props
+        const name = currentUser && currentUser.firstName ?  `Welcome ${currentUser.firstName} ${currentUser.lastName}` : ""
+        let menuItems = []
+        menuItems.push(<Menu.Item key="/"><Link to="/"><span>Home</span></Link></Menu.Item>)
+        if (currentUser) {   
+            if (currentUser.role !== EMPLOYEE_ROLES.employee) {
+                menuItems.push(<Menu.Item key={ROUTES.employees}><Link to={ROUTES.employees}><span>Employees</span></Link></Menu.Item>,)
+            }   
+            
+            menuItems = menuItems.concat([
+                <Menu.Item key={ROUTES.roster}><Link to={ROUTES.roster}><span>Roster</span></Link></Menu.Item>,
+                <Menu.Item key={ROUTES.availability}><Link to={ROUTES.availability}><span>Availability</span></Link></Menu.Item>,
+                <Menu.Item key={ROUTES.leave}><Link to={ROUTES.leave}><span>Leaves</span></Link></Menu.Item>
+            ])
+
+            if (currentUser.role !== EMPLOYEE_ROLES.employee) {
+                menuItems.push(<Menu.Item key={ROUTES.report}><Link to={ROUTES.report}><span>Report</span></Link></Menu.Item>,)
+            }
+        }
+    
+        
         return (
             <Header className="app-header">
                 <div className="container">
                     <div className="app-title" >
-                        <Link to="/">Cafe Employees Management System</Link>
+                        <Link to="/">Cafe Employees Management System - CEMS</Link>
                     </div>
+                    <ProfileArea showSignUpModal={showSignUpModal} showSignInModal={showSignInModal} isAuthenticated={isAuthenticated} onSignOut={onSignOut} name={name} />
                     <Menu
                         className="app-menu"
                         mode="horizontal"
-                        selectedKeys={[this.props.location.pathname]}
-                        style={{ lineHeight: '64px' }} >
+                        selectedKeys={[this.props.location.pathname]}>
                         {menuItems}
                     </Menu>
                 </div>

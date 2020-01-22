@@ -1,0 +1,152 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.container {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.page-title {
+  text-transform: capitalize;
+}
+
+div.ant-form-item {
+  margin-bottom: 0;
+}
+
+.ant-layout .app-content {
+  margin-top: 10px;
+}
+
+.app-title {
+  float: left;
+}
+
+.app-title a {
+  text-decoration: none;
+  font-size: 21px;
+  display: inline-block;
+}
+
+.app-title a:hover {
+  text-decoration: none;
+}
+
+.app-header {
+  height: auto;
+  width: 100%;
+  box-shadow: 0 2px 8px #f0f1f2;
+  z-index: 10;
+  padding: 0;
+}
+
+.ant-form {
+  display: block;
+  margin: 0 auto !important;
+}
+
+
+.btn-link {
+  border: none !important;
+  display: inline-block;
+  line-height: 24px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  vertical-align: middle;
+}
+
+.btn-link.btn-link-signup {
+  margin-right: 10px;
+}
+
+.btn-link-forgot, .btn-link-signup-now {
+  float: right;
+}
+
+.app-container .ant-layout-header {
+  height: auto;
+  line-height: auto;
+}
+
+.app-container .profile-area {
+  float: right;
+}
+
+.profile-area .profile-menu {
+  top: 24px;
+  position: absolute;
+  z-index: 100;
+}
+
+.profile-area .ant-radio-button-wrapper:first-child {
+  border: none;
+}
+
+.app-header .ant-menu-horizontal > .ant-menu-item {
+  color: rgba(0,0,0,.54);
+}
+
+.app-header .ant-menu-horizontal > .ant-menu-item-selected > a {
+  color: rgba(0,0,0,.90);
+}
+
+.app-menu {
+  display: block;
+  overflow: hidden;
+  clear: both;
+}
+
+.app-menu.ant-menu-horizontal {
+  border-bottom: none;
+}
+
+.app-menu li.ant-menu-item,
+.app-menu li.ant-menu-item:hover,
+.app-menu li.ant-menu-item:focus,
+.app-menu li.ant-menu-item:active {
+  border: none;
+}
+
+.app-menu li.ant-menu-item {
+  padding: 0 10px;
+}
+
+.app-menu .ant-menu-horizontal > .ant-menu-item > a:hover {
+  color: inherit;
+}
+
+.app-menu li.ant-menu-item:nth-child(2) {
+  padding-left: 0;
+}
+
+.app-menu li span {
+  text-transform: uppercase;
+}
+
+.login-form {
+  margin: 50px auto;
+  max-width: 300px;
+}
+.login-form-forgot {
+  float: right;
+}
+.login-form-button {
+  width: 100%;
+}
+
+.ant-modal-title {
+  text-transform: capitalize;
+}
+
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.7em;
+  }
+}
